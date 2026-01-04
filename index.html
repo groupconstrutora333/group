@@ -323,10 +323,11 @@
           <b>Orçamento rápido</b>
           <span>Envie fotos + local + medidas aproximadas no WhatsApp.</span>
         </div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <a class="btn primary" id="btnCtaWhats" href="#" target="_blank" rel="noopener">Chamar no WhatsApp</a>
-          <a class="btn" href="#contato">Contato</a>
-        </div>
+       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+  <a class="btn primary" id="btnContatoWhats" href="#" target="_blank" rel="noopener">WhatsApp</a>
+  <a class="btn ghost" id="btnContatoEmail" href="#">E-mail</a>
+  <a class="btn ghost" id="btnContatoInsta" href="#" target="_blank" rel="noopener">Instagram</a>
+</div>
       </div>
     </section>
 
@@ -459,6 +460,8 @@
 
     document.getElementById("btnContatoInsta").href = s.instagramUrl;
     document.getElementById("btnHeroInsta").href = s.instagramUrl;
+    document.getElementById("btnContatoEmail").href =
+  `mailto:${s.email}?subject=${encodeURIComponent("Contato - " + s.empresa)}`;
 
     document.getElementById("heroMedia").style.backgroundImage = 'url("img/casa.png")';
   </script>
