@@ -196,10 +196,8 @@
       cidade: "Angra dos Reis • RJ",
       whatsapp: "5524999297179",
       telefoneVisivel: "(24) 99929-7179",
-   instagramUrl: "https://www.instagram.com/group_construtora/",
- email: "groupconstrutora333@gmail.com"
-
-
+      instagramUrl: "https://www.instagram.com/group_construtora/",
+      email: "groupconstrutora333@gmail.com"
     };
   </script>
 
@@ -323,11 +321,12 @@
           <b>Orçamento rápido</b>
           <span>Envie fotos + local + medidas aproximadas no WhatsApp.</span>
         </div>
-       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-  <a class="btn primary" id="btnContatoWhats" href="#" target="_blank" rel="noopener">WhatsApp</a>
-  <a class="btn ghost" id="btnContatoEmail" href="#">E-mail</a>
-  <a class="btn ghost" id="btnContatoInsta" href="#" target="_blank" rel="noopener">Instagram</a>
-</div>
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+          <a class="btn primary" id="btnCtaWhats" href="#" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="btn ghost" id="btnCtaEmail" href="#">E-mail</a>
+          <a class="btn ghost" id="btnCtaInsta" href="#" target="_blank" rel="noopener">Instagram</a>
+        </div>
       </div>
     </section>
 
@@ -389,8 +388,9 @@
           <h3>Mensagem pronta</h3>
           <p style="color:var(--muted);margin-top:-6px">Clique e mande a mensagem com suas fotos/medidas.</p>
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
-            <a class="btn primary" id="btnContatoWhats" href="#" target="_blank" rel="noopener">WhatsApp</a>
-            <a class="btn ghost" id="btnContatoInsta" href="#" target="_blank" rel="noopener">Instagram</a>
+            <a class="btn primary" id="btnContatoWhats2" href="#" target="_blank" rel="noopener">WhatsApp</a>
+            <a class="btn ghost" id="btnContatoEmail2" href="#">E-mail</a>
+            <a class="btn ghost" id="btnContatoInsta2" href="#" target="_blank" rel="noopener">Instagram</a>
           </div>
         </div>
 
@@ -419,6 +419,15 @@
               </div>
               <div class="pill">Portfólio</div>
             </div>
+
+            <div class="contact-item">
+              <div>
+                <b>E-mail</b>
+                <small id="email2">groupconstrutora333@gmail.com</small>
+              </div>
+              <div class="pill">E-mail</div>
+            </div>
+
           </div>
         </div>
       </div>
@@ -449,21 +458,30 @@
     document.getElementById("cidade2").textContent = s.cidade;
     document.getElementById("fone2").textContent = s.telefoneVisivel;
     document.getElementById("foneHero").textContent = s.telefoneVisivel;
+    document.getElementById("email2").textContent = s.email;
     document.getElementById("ano").textContent = new Date().getFullYear();
 
     const wa = (text) => `https://wa.me/${s.whatsapp}?text=${encodeURIComponent(text)}`;
     const msgPadrao = "Olá! Quero um orçamento. Vou enviar fotos e medidas aproximadas.";
+
+    // WhatsApp (todos os botões)
     document.getElementById("btnTopoWhats").href = wa(msgPadrao);
     document.getElementById("btnHeroWhats").href = wa(msgPadrao);
-    document.getElementById("btnContatoWhats").href = wa(msgPadrao);
     document.getElementById("btnCtaWhats").href = wa(msgPadrao);
+    document.getElementById("btnContatoWhats2").href = wa(msgPadrao);
 
-    document.getElementById("btnContatoInsta").href = s.instagramUrl;
+    // Instagram (todos os botões)
     document.getElementById("btnHeroInsta").href = s.instagramUrl;
-    document.getElementById("btnContatoEmail").href =
-  `mailto:${s.email}?subject=${encodeURIComponent("Contato - " + s.empresa)}`;
+    document.getElementById("btnCtaInsta").href = s.instagramUrl;
+    document.getElementById("btnContatoInsta2").href = s.instagramUrl;
 
-    document.getElementById("heroMedia").style.backgroundImage = 'url("img/casa.jpg")';
+    // E-mail (todos os botões)
+    const mailto = `mailto:${s.email}?subject=${encodeURIComponent("Contato - " + s.empresa)}&body=${encodeURIComponent("Olá! Quero um orçamento. Vou enviar fotos e medidas aproximadas.")}`;
+    document.getElementById("btnCtaEmail").href = mailto;
+    document.getElementById("btnContatoEmail2").href = mailto;
+
+    // Imagem do hero
+    document.getElementById("heroMedia").style.backgroundImage = 'url("img/casa.png")';
   </script>
 </body>
 </html>
