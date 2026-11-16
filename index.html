@@ -750,7 +750,7 @@
       try {
         const r = await fetch("https://formsubmit.co/ajax/" + s.email, {
           method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-          body: JSON.stringify({ _subject: "[Site] Pedido de orçamento - " + d.servico + " - " + d.cidade, _template: "table", _captcha: "false",
+          body: JSON.stringify({ _subject: "[Site] Pedido de orçamento - " + d.servico + " - " + d.cidade, _template: "table", _captcha: "false", ...(d.email ? { _replyto: d.email } : {}),
             Nome: d.nome, WhatsApp: d.telefone, Email: d.email || "-", Cidade: d.cidade, Servico: d.servico, Mensagem: d.mensagem, Origem: "groupconstrutora.com.br" })
         });
         const j = await r.json().catch(() => ({}));
