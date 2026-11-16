@@ -12,7 +12,10 @@
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Group Construtora — do alicerce ao acabamento" />
   <meta property="og:description" content="Obras, reformas, decks, impermeabilização e manutenção mensal na Costa Verde (RJ/SP)." />
-  <meta property="og:image" content="https://groupconstrutora.com.br/img/web/p3.jpg" />
+  <meta property="og:image" content="https://groupconstrutora.com.br/img/web/og.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta property="og:url" content="https://groupconstrutora.com.br/" />
   <meta property="og:locale" content="pt_BR" />
 
@@ -33,7 +36,7 @@
     "name": "Group Construtora",
     "url": "https://groupconstrutora.com.br/",
     "logo": "https://groupconstrutora.com.br/assets/logo.png",
-    "image": "https://groupconstrutora.com.br/img/web/p3.jpg",
+    "image": "https://groupconstrutora.com.br/img/web/og.jpg",
     "telephone": "+55-24-99929-7179",
     "email": "groupconstrutora333@gmail.com",
     "taxID": "50.935.637/0001-48",
@@ -98,8 +101,8 @@
     .menu-btn[aria-expanded="true"] span:nth-child(2){opacity:0}
     .menu-btn[aria-expanded="true"] span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
     @media (max-width: 1060px){
-      nav.main{position:fixed; inset:68px 12px auto 12px; flex-direction:column; align-items:stretch; gap:2px; padding:10px; border-radius:20px; background:rgba(7,10,20,.96); border:1px solid var(--line); box-shadow:var(--shadow); transform:translateY(-12px); opacity:0; pointer-events:none; transition:.25s var(--ease)}
-      nav.main.open{transform:none; opacity:1; pointer-events:auto}
+      nav.main{visibility:hidden; position:fixed; inset:68px 12px auto 12px; flex-direction:column; align-items:stretch; gap:2px; padding:10px; border-radius:20px; background:rgba(7,10,20,.96); border:1px solid var(--line); box-shadow:var(--shadow); transform:translateY(-12px); opacity:0; pointer-events:none; transition:.25s var(--ease)}
+      nav.main.open{transform:none; opacity:1; pointer-events:auto; visibility:visible}
       nav.main a{font-size:16px;padding:12px 14px}
       .menu-btn{display:block}
       .topbar .btn.top-cta{display:none}
@@ -222,7 +225,7 @@
     .chip svg{width:20px;height:20px;color:var(--gold)}
 
     /* PORTFÓLIO */
-    .gallery{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:90px;gap:14px}
+    .gallery{display:grid;grid-template-columns:repeat(12,1fr);grid-auto-rows:90px;grid-auto-flow:dense;gap:14px}
     .gal{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow2);cursor:zoom-in;background:#0a0d18;padding:0;color:inherit;font:inherit;text-align:left}
     .gal img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s var(--ease), filter .5s}
     .gal:hover img{transform:scale(1.07);filter:saturate(1.15)}
@@ -232,8 +235,10 @@
     .gal .cap b{display:block;font-size:16px}
     .gal .cap small{color:var(--muted)}
     .pill{padding:7px 11px;border-radius:999px;border:1px solid rgba(241,199,106,.3);background:rgba(241,199,106,.16);font-size:12px;font-weight:900;white-space:nowrap}
-    .g-a{grid-column:span 5;grid-row:span 5}.g-b{grid-column:span 7;grid-row:span 3}.g-c{grid-column:span 4;grid-row:span 3}.g-d{grid-column:span 3;grid-row:span 3}
+    .g-a{grid-column:span 5;grid-row:span 6}.g-b{grid-column:span 7;grid-row:span 3}.g-c{grid-column:span 4;grid-row:span 3}.g-d{grid-column:span 3;grid-row:span 3}
     .g-e{grid-column:span 4;grid-row:span 4}.g-f{grid-column:span 4;grid-row:span 4}.g-g{grid-column:span 4;grid-row:span 4}
+    .lb-btn{z-index:2}
+    @media (max-width: 600px){.lb-prev,.lb-next{top:auto;bottom:56px;transform:none}}
     @media (max-width: 860px){.gallery{grid-auto-rows:70px}.g-a,.g-b,.g-c,.g-d,.g-e,.g-f,.g-g{grid-column:span 12;grid-row:span 4}}
     .lightbox{position:fixed;inset:0;z-index:200;background:rgba(3,5,12,.94);display:none;align-items:center;justify-content:center;padding:20px}
     .lightbox.open{display:flex;animation:fadein .25s}
@@ -370,7 +375,7 @@
   <main>
     <!-- HERO -->
     <section class="hero" id="inicio">
-      <div class="hero-bg" id="heroBg" style="background-image:url('img/web/p3.jpg')"></div>
+      <div class="hero-bg" id="heroBg" style="background-image:url('img/web/p1.jpg')"></div>
       <div class="hero-inner">
         <div class="kicker anim"><span class="dot"></span> Do alicerce ao acabamento</div>
         <h1 class="anim d1">Construção e reformas em <span class="grad">alto padrão</span> na Costa Verde.</h1>
@@ -383,9 +388,9 @@
           <a class="btn" href="#portfolio">Ver portfólio</a>
         </div>
         <div class="hero-badges anim d4">
-          <div class="hb"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg></i>Angra · Ilha Grande · Paraty · Mangaratiba · Ubatuba</div>
-          <div class="hb"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3v18"/></svg></i>Visita técnica e proposta clara</div>
-          <div class="hb"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></i>Atendimento direto (24) 99929-7179</div>
+          <div class="hb"><i><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.5"/></svg></i>Angra · Ilha Grande · Paraty · Mangaratiba · Ubatuba</div>
+          <div class="hb"><i><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3v18"/></svg></i>Visita técnica e proposta clara</div>
+          <div class="hb"><i><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></i>Atendimento direto (24) 99929-7179</div>
         </div>
       </div>
       <div class="scroll-hint" aria-hidden="true"></div>
@@ -407,13 +412,13 @@
           <p class="lead">Somos uma construtora de Angra dos Reis que cuida da obra do planejamento à entrega. Conhecemos o desafio de construir perto do mar — maresia, umidade, acessos por barco e prazos de temporada — e organizamos tudo para você não precisar coordenar cada profissional.</p>
           <ul class="checks">
             <li><i>✓</i><span><b>Um único ponto de contato</b> — recebemos a demanda, definimos a equipe certa e acompanhamos até a prestação de contas.</span></li>
-            <li><i>✓</i><span><b>Logística resolvida</b> — compra de materiais, transporte e translado, inclusive para a Ilha Grande.</span></li>
+            <li><i>✓</i><span><b>Logística resolvida</b> — compra de materiais, transporte e traslado, inclusive para a Ilha Grande.</span></li>
             <li><i>✓</i><span><b>Escopo e proposta claros</b> — cronograma por etapas e acompanhamento do início ao fim.</span></li>
             <li><i>✓</i><span><b>Acabamento de alto padrão</b> — obra limpa, organizada e pronta para uso.</span></li>
           </ul>
         </div>
         <div class="about-media reveal right" id="aboutMedia">
-          <img src="img/web/p1.jpg" alt="Píer de madeira executado pela Group Construtora sobre o mar" loading="lazy">
+          <img src="img/web/p4.jpg" alt="Píer de madeira com escada executado pela Group Construtora" loading="lazy">
           <div class="tag"><b>Obras à beira-mar</b><small>Decks, píeres e estruturas em madeira resistentes à maresia</small></div>
         </div>
       </div>
@@ -426,14 +431,14 @@
         <h2>Tudo o que a sua obra precisa, com uma equipe só.</h2>
         <p class="lead">Da fundação ao último detalhe — e a manutenção depois da entrega.</p></div>
         <div class="grid cards-4 stagger">
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg></div><h3>Construção e ampliação</h3><p>Obra do zero, ampliação de ambientes e soluções estruturais.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg></div><h3>Reformas completas</h3><p>Reforma geral, modernização e retrofit de casas, apartamentos e pousadas.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 18c2 0 2-1.5 4-1.5S8 18 10 18s2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M4 14h16M6 14V6m12 8V6M4 6h16"/></svg></div><h3>Decks e píeres</h3><p>Decks, píeres, escadas e guarda-corpos em madeira, sobre o mar ou no jardim.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2.7S6 9.5 6 14a6 6 0 0 0 12 0c0-4.5-6-11.3-6-11.3Z"/></svg></div><h3>Impermeabilização</h3><p>Cisternas, lajes, banheiros e áreas molhadas, com teste de estanqueidade.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M3 20h18"/></svg></div><h3>Telhados, calhas e rufos</h3><p>Coberturas, pergolados, calhas, descidas e rufos bem vedados.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></div><h3>Hidráulica e elétrica</h3><p>Instalações, boiler e água quente, ajustes e acabamento final.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 11V4a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v7"/><rect x="3" y="11" width="18" height="4" rx="1"/><path d="M12 15v6"/></svg></div><h3>Acabamentos</h3><p>Revestimentos, pintura, drywall, forros, portas e detalhes finos.</p></div>
-          <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 15l2 2 4-4"/></svg></div><h3>Manutenção predial</h3><p>Atendimento recorrente para pousadas, condomínios e casas de temporada.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 21h18M5 21V9l7-5 7 5v12"/><path d="M9 21v-6h6v6"/></svg></div><h3>Construção e ampliação</h3><p>Obra do zero, ampliação de ambientes e soluções estruturais.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8Z"/></svg></div><h3>Reformas completas</h3><p>Reforma geral, modernização e retrofit de casas, apartamentos e pousadas.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 18c2 0 2-1.5 4-1.5S8 18 10 18s2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M4 14h16M6 14V6m12 8V6M4 6h16"/></svg></div><h3>Decks e píeres</h3><p>Decks, píeres, escadas e guarda-corpos em madeira, sobre o mar ou no jardim.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2.7S6 9.5 6 14a6 6 0 0 0 12 0c0-4.5-6-11.3-6-11.3Z"/></svg></div><h3>Impermeabilização</h3><p>Cisternas, lajes, banheiros e áreas molhadas, com teste de estanqueidade nas cisternas.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11 12 4l9 7"/><path d="M5 10v10h14V10"/><path d="M3 20h18"/></svg></div><h3>Telhados, calhas e rufos</h3><p>Coberturas, pergolados, calhas, descidas e rufos bem vedados.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg></div><h3>Hidráulica e elétrica</h3><p>Instalações, boiler e água quente, ajustes e acabamento final.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 11V4a1 1 0 0 0-1-1H6a1 1 0 0 0-1 1v7"/><rect x="3" y="11" width="18" height="4" rx="1"/><path d="M12 15v6"/></svg></div><h3>Acabamentos</h3><p>Revestimentos, pintura, drywall, forros, portas e detalhes finos.</p></div>
+          <div class="card"><div class="icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 15l2 2 4-4"/></svg></div><h3>Manutenção predial</h3><p>Atendimento recorrente para pousadas, condomínios e casas de temporada.</p></div>
         </div>
       </div>
     </section>
@@ -459,17 +464,17 @@
             <a class="btn ghost js-plan" href="#orcamento" data-servico="Reforma">Quero um orçamento</a>
           </div>
           <div class="plan featured">
-            <span class="ribbon">Mais procurado por pousadas</span>
+            <span class="ribbon">Ideal para pousadas e condomínios</span>
             <h3>Manutenção mensal</h3>
             <p class="for">Pousadas, condomínios, casas de temporada e administradoras.</p>
             <div class="price">Mensalidade fixa · sob consulta</div>
             <ul>
               <li>Um único contato para todas as manutenções</li>
               <li>Recebemos as solicitações e definimos o profissional certo</li>
-              <li>Controle de materiais, compras e translado</li>
+              <li>Controle de materiais, compras e traslado</li>
               <li>Acompanhamento da execução e prestação de contas</li>
               <li>Mão de obra e materiais apurados por atendimento</li>
-              <li>Contrato com prazo definido e mensalidade sem reajuste no período</li>
+              <li>Contrato com prazo definido</li>
             </ul>
             <a class="btn primary js-plan" href="#orcamento" data-servico="Contrato mensal de manutenção (pousada, condomínio, casa de aluguel)">Quero o plano mensal</a>
           </div>
@@ -501,7 +506,7 @@
           <div class="step"><div class="num">1</div><div><h3>Contato</h3><p>Você conta o que precisa pelo formulário ou WhatsApp, com fotos e local.</p></div></div>
           <div class="step"><div class="num">2</div><div><h3>Visita técnica</h3><p>Avaliamos no local quando necessário, inclusive na Ilha Grande.</p></div></div>
           <div class="step"><div class="num">3</div><div><h3>Proposta</h3><p>Escopo, etapas, prazos e valores por escrito.</p></div></div>
-          <div class="step"><div class="num">4</div><div><h3>Execução</h3><p>Equipe alinhada, materiais organizados e acompanhamento diário.</p></div></div>
+          <div class="step"><div class="num">4</div><div><h3>Execução</h3><p>Equipe alinhada, materiais organizados e acompanhamento em cada etapa.</p></div></div>
           <div class="step"><div class="num">5</div><div><h3>Entrega</h3><p>Vistoria final, limpeza e checklist — obra pronta para uso.</p></div></div>
         </div>
       </div>
@@ -512,12 +517,12 @@
       <div class="container">
         <div class="reveal"><div class="eyebrow">Para quem</div><h2>Atendemos quem vive e recebe na Costa Verde.</h2></div>
         <div class="chips stagger" style="margin-top:22px">
-          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>Residências de alto padrão</div>
-          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M10 14h4"/></svg>Pousadas e hotéis</div>
-          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>Condomínios</div>
-          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2"/></svg>Casas de temporada</div>
-          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 18c2 0 2-1.5 4-1.5S8 18 10 18s2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M12 3v11M7 8l5-5 5 5"/></svg>Marinas e casas de praia</div>
-          <div class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Empresas e administradoras</div>
+          <div class="chip"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg>Residências de alto padrão</div>
+          <div class="chip"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20M4 20V10l8-6 8 6v10"/><path d="M10 14h4"/></svg>Pousadas e hotéis</div>
+          <div class="chip"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="1"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>Condomínios</div>
+          <div class="chip"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2"/></svg>Casas de temporada</div>
+          <div class="chip"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 18c2 0 2-1.5 4-1.5S8 18 10 18s2-1.5 4-1.5 2 1.5 4 1.5 2-1.5 4-1.5"/><path d="M12 3v11M7 8l5-5 5 5"/></svg>Marinas e casas de praia</div>
+          <div class="chip"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Empresas e administradoras</div>
         </div>
       </div>
     </section>
@@ -527,14 +532,14 @@
       <div class="container">
         <div class="reveal"><div class="eyebrow">Portfólio</div>
         <h2>Obras reais, executadas pela nossa equipe.</h2>
-        <p class="lead">Toque nas fotos para ampliar.</p></div>
+        <p class="lead">Clique ou toque nas fotos para ampliar.</p></div>
         <div class="gallery stagger" id="gallery">
-          <button class="gal g-a" data-full="img/web/p3.jpg" data-cap="Píer sobre o mar — estrutura e deck em madeira"><img src="img/web/p3-sm.jpg" alt="Píer de madeira sobre o mar" loading="lazy"><span class="cap"><span><b>Píer sobre o mar</b><small>Estrutura e deck em madeira</small></span><span class="pill">Píer</span></span></button>
-          <button class="gal g-b" data-full="img/web/hero.jpg" data-cap="Casa à beira-mar — deck e área externa"><img src="img/web/hero-sm.jpg" alt="Casa à beira-mar com deck" loading="lazy" style="object-position:center 70%"><span class="cap"><span><b>Casa à beira-mar</b><small>Deck e área externa</small></span><span class="pill">Obra</span></span></button>
-          <button class="gal g-c" data-full="img/web/p4.jpg" data-cap="Escada e deck sobre pedras — acesso ao mar"><img src="img/web/p4-sm.jpg" alt="Escada e deck de madeira sobre pedras" loading="lazy"><span class="cap"><span><b>Acesso ao mar</b><small>Escada e deck</small></span><span class="pill">Acesso</span></span></button>
-          <button class="gal g-d" data-full="img/web/g2.jpg" data-cap="Ponte e guarda-corpo em madeira"><img src="img/web/g2-sm.jpg" alt="Ponte de madeira com guarda-corpo" loading="lazy"><span class="cap"><span><b>Ponte em madeira</b><small>Guarda-corpo em X</small></span><span class="pill">Externa</span></span></button>
-          <button class="gal g-e" data-full="img/web/p1.jpg" data-cap="Deck do píer — acabamento e alinhamento"><img src="img/web/p1-sm.jpg" alt="Deck do píer com acabamento em madeira" loading="lazy"><span class="cap"><span><b>Deck do píer</b><small>Acabamento e alinhamento</small></span><span class="pill">Deck</span></span></button>
-          <button class="gal g-f" data-full="img/web/p2.jpg" data-cap="Deck com iluminação embutida"><img src="img/web/p2-sm.jpg" alt="Deck de madeira com iluminação embutida" loading="lazy"><span class="cap"><span><b>Detalhe de acabamento</b><small>Iluminação embutida</small></span><span class="pill">Detalhe</span></span></button>
+          <button class="gal g-a" data-full="img/web/p1.jpg" data-cap="Píer sobre o mar — estrutura e deck em madeira"><img src="img/web/p1-sm.jpg" alt="Píer de madeira sobre o mar com montanhas ao fundo" loading="lazy"><span class="cap"><span><b>Píer sobre o mar</b><small>Estrutura e deck em madeira</small></span><span class="pill">Píer</span></span></button>
+          <button class="gal g-b" data-full="img/web/casa-mar.jpg" data-cap="Casa à beira-mar — deck sobre a água"><img src="img/web/casa-mar-sm.jpg" alt="Casa com deck de madeira sobre a água" loading="lazy" style="object-position:center 70%"><span class="cap"><span><b>Casa à beira-mar</b><small>Deck sobre a água</small></span><span class="pill">Obra</span></span></button>
+          <button class="gal g-c" data-full="img/web/p4.jpg" data-cap="Píer com deck, escada e guarda-corpo"><img src="img/web/p4-sm.jpg" alt="Píer de madeira com escada e guarda-corpo" loading="lazy"><span class="cap"><span><b>Píer completo</b><small>Deck, escada e guarda-corpo</small></span><span class="pill">Píer</span></span></button>
+          <button class="gal g-d" data-full="img/web/g2.jpg" data-cap="Deck com iluminação embutida"><img src="img/web/g2-sm.jpg" alt="Deck de madeira com iluminação embutida" loading="lazy"><span class="cap"><span><b>Detalhe de acabamento</b><small>Iluminação embutida</small></span><span class="pill">Detalhe</span></span></button>
+          <button class="gal g-e" data-full="img/web/p3.jpg" data-cap="Escada de acesso ao mar em madeira e inox"><img src="img/web/p3-sm.jpg" alt="Escada de madeira e inox para acesso ao mar" loading="lazy"><span class="cap"><span><b>Acesso ao mar</b><small>Madeira e inox</small></span><span class="pill">Acesso</span></span></button>
+          <button class="gal g-f" data-full="img/web/escada.jpg" data-cap="Escada e deck junto ao muro de pedra"><img src="img/web/escada-sm.jpg" alt="Escada e deck de madeira junto a muro de pedra à beira-mar" loading="lazy"><span class="cap"><span><b>Escada e deck</b><small>Junto ao muro de pedra</small></span><span class="pill">Externa</span></span></button>
           <button class="gal g-g" data-full="img/web/g1.jpg" data-cap="Píer e deck — visão geral da obra"><img src="img/web/g1-sm.jpg" alt="Visão geral de píer e deck" loading="lazy"><span class="cap"><span><b>Visão geral</b><small>Píer e deck</small></span><span class="pill">Entrega</span></span></button>
         </div>
         <div class="reveal" style="margin-top:22px;display:flex;gap:12px;flex-wrap:wrap">
@@ -549,7 +554,7 @@
         <div class="reveal left">
           <div class="eyebrow">Região atendida</div>
           <h2>De Ubatuba a Mangaratiba, passando pela Ilha Grande.</h2>
-          <p class="lead">Base em Angra dos Reis e equipe preparada para obras no continente e nas ilhas, com planejamento de transporte de materiais e translado.</p>
+          <p class="lead">Base em Angra dos Reis e equipe preparada para obras no continente e nas ilhas, com planejamento de transporte de materiais e traslado.</p>
           <div class="cities stagger">
             <div class="city-item"><b>Angra dos Reis</b><small>Base da Group</small></div>
             <div class="city-item"><b>Ilha Grande</b><small>Logística por barco</small></div>
@@ -558,8 +563,8 @@
             <div class="city-item"><b>Ubatuba</b><small>SP</small></div>
           </div>
         </div>
-        <div class="map reveal right" id="map" aria-label="Mapa ilustrativo da região atendida">
-          <svg viewBox="0 0 520 380" role="img" aria-hidden="true">
+        <div class="map reveal right" id="map" role="img" aria-label="Mapa ilustrativo da região atendida: Ubatuba, Paraty, Ilha Grande, Angra dos Reis e Mangaratiba">
+          <svg viewBox="0 0 520 380" aria-hidden="true">
             <defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(56,189,248,.08)"/><stop offset="1" stop-color="rgba(56,189,248,.02)"/></linearGradient></defs>
             <path d="M0 230 C60 220 80 260 130 250 S200 200 240 215 S300 170 350 160 S420 120 470 110 S520 80 520 80 L520 380 L0 380 Z" fill="url(#sea)"/>
             <path class="coast" d="M0 230 C60 220 80 260 130 250 S200 200 240 215 S300 170 350 160 S420 120 470 110 S520 80 520 80"/>
@@ -579,9 +584,9 @@
       <div class="container">
         <div class="reveal"><div class="eyebrow">Dúvidas frequentes</div><h2>Perguntas que sempre recebemos.</h2></div>
         <div class="faq stagger" style="margin-top:24px">
-          <details><summary>Vocês atendem na Ilha Grande?</summary><div class="ans">Sim. Planejamos o transporte de materiais e o translado da equipe para obras e manutenções na Ilha Grande e outras ilhas da baía.</div></details>
+          <details><summary>Vocês atendem na Ilha Grande?</summary><div class="ans">Sim. Planejamos o transporte de materiais e o traslado da equipe para obras e manutenções na Ilha Grande e outras ilhas da baía.</div></details>
           <details><summary>Quanto custa uma obra ou reforma?</summary><div class="ans">Depende do escopo, dos materiais e do local. Envie fotos, endereço e medidas aproximadas pelo formulário ou WhatsApp — se necessário fazemos uma visita técnica e enviamos a proposta por escrito.</div></details>
-          <details><summary>Como funciona o plano de manutenção mensal?</summary><div class="ans">Você paga uma mensalidade fixa pela gestão das manutenções e cada atendimento (mão de obra, materiais e deslocamento) é apurado à parte. A Group recebe as solicitações, escolhe o profissional, organiza compras e translado e presta contas de tudo.</div></details>
+          <details><summary>Como funciona o plano de manutenção mensal?</summary><div class="ans">Você paga uma mensalidade fixa pela gestão das manutenções e cada atendimento (mão de obra, materiais e deslocamento) é apurado à parte. A Group recebe as solicitações, escolhe o profissional, organiza compras e traslado e presta contas de tudo.</div></details>
           <details><summary>Vocês fazem visita técnica?</summary><div class="ans">Sim, quando a obra precisa de avaliação no local. Combinamos o melhor dia pelo WhatsApp.</div></details>
           <details><summary>Trabalham com decks e píeres sobre o mar?</summary><div class="ans">Sim, é uma das nossas especialidades: estrutura, deck, escadas e guarda-corpos em madeira, com acabamento para resistir à maresia.</div></details>
           <details><summary>E a garantia?</summary><div class="ans">As condições de garantia de cada serviço são descritas na proposta, de acordo com o tipo de execução.</div></details>
@@ -600,7 +605,7 @@
             <form id="formOrcamento" class="orc-form" novalidate>
               <div class="two">
                 <label>Nome<input name="nome" placeholder="Seu nome" required autocomplete="name"></label>
-                <label>WhatsApp<input name="telefone" placeholder="(24) 99999-9999" required inputmode="tel" autocomplete="tel"></label>
+                <label>WhatsApp<input name="telefone" type="tel" placeholder="(24) 99999-9999" required minlength="10" pattern="[0-9()+\s.\-]{10,20}" title="Informe o WhatsApp com DDD" inputmode="tel" autocomplete="tel"></label>
               </div>
               <label>E-mail (opcional)<input name="email" type="email" placeholder="voce@email.com" autocomplete="email"></label>
               <div class="two">
@@ -626,7 +631,7 @@
               <a class="contact-item js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pelo site e quero um orçamento."><div><b>WhatsApp</b><small>(24) 99929-7179</small></div><span class="pill">Chamar</span></a>
               <a class="contact-item" href="tel:+5524999297179"><div><b>Telefone</b><small>(24) 99929-7179</small></div><span class="pill">Ligar</span></a>
               <a class="contact-item" href="mailto:groupconstrutora333@gmail.com?subject=Contato%20-%20Group%20Construtora"><div><b>E-mail</b><small>groupconstrutora333@gmail.com</small></div><span class="pill">Escrever</span></a>
-              <a class="contact-item js-insta" href="#" target="_blank" rel="noopener"><div><b>Instagram</b><small>@groupconstrutora</small></div><span class="pill">Seguir</span></a>
+              <a class="contact-item js-insta" href="#" target="_blank" rel="noopener"><div><b>Instagram</b><small>Fotos das obras</small></div><span class="pill">Seguir</span></a>
               <div class="contact-item"><div><b>Base</b><small>Angra dos Reis • RJ</small></div><span class="pill">RJ</span></div>
             </div>
           </div>
@@ -675,8 +680,11 @@
 
     // menu mobile
     const nav = document.getElementById("nav"), menuBtn = document.getElementById("menuBtn");
-    menuBtn.addEventListener("click", () => { const o = nav.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", o); });
-    nav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => { nav.classList.remove("open"); menuBtn.setAttribute("aria-expanded", "false"); }));
+    function setMenu(o){ nav.classList.toggle("open", o); menuBtn.setAttribute("aria-expanded", o); menuBtn.setAttribute("aria-label", o ? "Fechar menu" : "Abrir menu"); }
+    menuBtn.addEventListener("click", () => setMenu(!nav.classList.contains("open")));
+    addEventListener("keydown", e => { if (e.key === "Escape") setMenu(false); });
+    document.addEventListener("click", e => { if (nav.classList.contains("open") && !nav.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false); });
+    nav.querySelectorAll("a").forEach(a => a.addEventListener("click", () => setMenu(false)));
 
     // topo, progresso e parallax
     const topbar = document.getElementById("topbar"), prog = document.getElementById("progress"), heroBg = document.getElementById("heroBg");
@@ -716,8 +724,9 @@
     const items = [...document.querySelectorAll("#gallery .gal")], lb = document.getElementById("lightbox"), lbImg = document.getElementById("lbImg"), lbCap = document.getElementById("lbCap");
     let cur = 0;
     function show(i){ cur = (i + items.length) % items.length; const it = items[cur]; lbImg.src = it.dataset.full; lbImg.alt = it.dataset.cap; lbCap.textContent = it.dataset.cap; }
-    items.forEach((it, i) => it.addEventListener("click", () => { show(i); lb.classList.add("open"); document.body.style.overflow = "hidden"; }));
-    function closeLb(){ lb.classList.remove("open"); document.body.style.overflow = ""; }
+    let lastFocus = null;
+    items.forEach((it, i) => it.addEventListener("click", () => { lastFocus = it; show(i); lb.classList.add("open"); document.body.style.overflow = "hidden"; document.getElementById("lbClose").focus(); }));
+    function closeLb(){ lb.classList.remove("open"); document.body.style.overflow = ""; if (lastFocus) lastFocus.focus(); }
     document.getElementById("lbClose").onclick = closeLb;
     document.getElementById("lbPrev").onclick = () => show(cur - 1);
     document.getElementById("lbNext").onclick = () => show(cur + 1);
@@ -734,7 +743,7 @@
     const f = document.getElementById("formOrcamento"), msg = document.getElementById("orcMsg"), bt = document.getElementById("orcBtn");
     f.addEventListener("submit", async (e) => {
       e.preventDefault();
-      if (!f.checkValidity()) { msg.className = "orc-msg err"; msg.textContent = "Preencha nome, WhatsApp, cidade, serviço e o que você precisa."; f.reportValidity(); return; }
+      if (!f.checkValidity()) { msg.className = "orc-msg err"; msg.textContent = "Confira os campos: nome, WhatsApp com DDD, e-mail válido (se preencher), cidade, serviço e o que você precisa."; f.reportValidity(); return; }
       const d = Object.fromEntries(new FormData(f).entries());
       if (d._honey) return;
       bt.disabled = true; msg.className = "orc-msg"; msg.textContent = "Enviando…";
@@ -744,7 +753,8 @@
           body: JSON.stringify({ _subject: "[Site] Pedido de orçamento - " + d.servico + " - " + d.cidade, _template: "table", _captcha: "false",
             Nome: d.nome, WhatsApp: d.telefone, Email: d.email || "-", Cidade: d.cidade, Servico: d.servico, Mensagem: d.mensagem, Origem: "groupconstrutora.com.br" })
         });
-        if (!r.ok) throw new Error(r.status);
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || String(j.success) !== "true") throw new Error(j.message || r.status);
         msg.className = "orc-msg ok";
         msg.innerHTML = 'Pedido enviado! Vamos retornar no seu WhatsApp. <a href="' + wa("Olá! Acabei de pedir um orçamento pelo site (" + d.servico + " em " + d.cidade + "). Vou mandar fotos.") + '" target="_blank" rel="noopener">Mandar fotos no WhatsApp</a>';
         f.reset();
