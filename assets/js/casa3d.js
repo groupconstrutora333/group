@@ -217,13 +217,63 @@
   put(s5, cyl(1.2, 0.08, std(0xf6f2e8, 0.9), 2.5, Y0 + 2.2, -1.2, s5.g, 24));
   put(s5, cyl(0.04, 2.1, mFrame, 2.5, Y0 + 1.1, -1.2, s5.g, 6));
   for (let i = 0; i < 8; i++) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), mInner); l.position.set(i % 2 ? PX + 1.15 : PX - 1.15, 2.15, 3 + i * 3.6); s5.g.add(l); put(s5, l); }
-  const boat = new THREE.Group(); s5.g.add(boat);
-  const hs = new THREE.Shape(); hs.moveTo(-1.2, -3.6); hs.lineTo(1.2, -3.6); hs.lineTo(1.2, 2.2); hs.quadraticCurveTo(0.9, 3.8, 0, 4.4); hs.quadraticCurveTo(-0.9, 3.8, -1.2, 2.2); hs.lineTo(-1.2, -3.6);
-  const hull = new THREE.Mesh(new THREE.ExtrudeGeometry(hs, { depth: 0.9, bevelEnabled: true, bevelSize: 0.15, bevelThickness: 0.15, bevelSegments: 3 }), std(0xf7f7f5, 0.3, 0.05));
-  hull.rotation.x = -Math.PI / 2; hull.castShadow = true; boat.add(hull);
-  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.7, 2.2), mGlass); cabin.position.set(0, 1.25, -0.2); boat.add(cabin);
-  const roof = new THREE.Mesh(new THREE.BoxGeometry(2, 0.08, 2.6), std(0xf7f7f5, 0.3)); roof.position.set(0, 1.65, -0.1); boat.add(roof);
-  boat.position.set(PX + 3.4, 0.05, PL - 6); put(s5, boat);
+  // iate de 60 pés (~18,3 m), linhas de flybridge italiano — casco em V, janelas longas no costado, flybridge com hardtop
+  function makeYacht() {
+    const g = new THREE.Group();
+    const L = 18.3, B = 4.9;
+    const gel = std(0xf6f6f3, 0.22, 0.05, { envMapIntensity: 1.3 });
+    const dark = std(0x0d1117, 0.08, 0.6, { envMapIntensity: 1.8 });
+    const teak = std(0xa9774a, 0.7, 0, woodTex(1, 6, 0));
+    const chrome = std(0xd9dde3, 0.15, 1);
+    const anti = std(0x1b2433, 0.6);
+    // casco: seções transversais ao longo do comprimento (z: 0 popa → L proa)
+    const N = 28, pos = [], idx = [];
+    const half = (u) => (u < 0.62 ? 1 : Math.sqrt(Math.max(0, 1 - Math.pow((u - 0.62) / 0.38, 2)))) * (B / 2) * (u < 0.05 ? 0.97 : 1);
+    const sheer = (u) => 1.55 + Math.pow(u, 2.2) * 0.75;
+    const keel = (u) => -0.95 + Math.pow(u, 3) * 0.75;
+    const prof = (u) => { const b = Math.max(0.02, half(u)); return [[0, keel(u)], [b * 0.55, keel(u) * 0.55 + 0.05], [b * 0.92, -0.1], [b, 0.35], [b * 0.99, sheer(u)]]; };
+    for (let i = 0; i <= N; i++) { const u = i / N, z = u * L - L / 2; const pr = prof(u); const row = [...pr.slice().reverse().map(([x, y]) => [-x, y]), ...pr.slice(1)]; row.forEach(([x, y]) => pos.push(x, y, z)); }
+    const R = 9;
+    for (let i = 0; i < N; i++) for (let j = 0; j < R - 1; j++) { const a = i * R + j, b = a + 1, c = a + R, d = c + 1; idx.push(a, c, b, b, c, d); }
+    // espelho de popa
+    const sb = pos.length / 3; const p0 = prof(0); const tr = [...p0.slice().reverse().map(([x, y]) => [-x, y]), ...p0.slice(1)];
+    tr.forEach(([x, y]) => pos.push(x, y, -L / 2)); pos.push(0, 0.8, -L / 2); const cIdx = sb + R;
+    for (let j = 0; j < R - 1; j++) idx.push(cIdx, sb + j, sb + j + 1);
+    const hg = new THREE.BufferGeometry(); hg.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); hg.setIndex(idx); hg.computeVertexNormals();
+    const hull = new THREE.Mesh(hg, gel); hull.material.side = THREE.DoubleSide; hull.castShadow = true; hull.receiveShadow = true; g.add(hull);
+    // faixa de antivegetativa na linha d'água
+    const bt = new THREE.Mesh(hg, anti); bt.scale.set(1.004, 1, 1.002); bt.material.side = THREE.DoubleSide; bt.material.clippingPlanes = []; g.add(bt);
+    bt.onBeforeRender = () => {}; bt.position.y = 0; bt.material = new THREE.ShaderMaterial({ side: THREE.DoubleSide, vertexShader: "varying float vy; void main(){ vy=position.y; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);} ", fragmentShader: "varying float vy; void main(){ if(vy>0.05) discard; gl_FragColor=vec4(0.06,0.09,0.14,1.0);} " });
+    // janelas longas no costado (assinatura do estilo)
+    [-1, 1].forEach((sd) => {
+      const w = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.32, 7.5), dark); w.position.set(sd * (B / 2 + 0.005), 0.95, -0.6); w.rotation.x = 0.03; g.add(w);
+      const w2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.18, 2.2), dark); w2.position.set(sd * (B / 2 - 0.02), 1.0, 4.2); g.add(w2);
+    });
+    // convés de teca e plataforma de banho
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(B * 0.96, 0.08, L * 0.62), teak); deck.position.set(0, 1.58, -L * 0.17); deck.receiveShadow = true; g.add(deck);
+    const swim = new THREE.Mesh(new THREE.BoxGeometry(B * 0.95, 0.12, 1.5), teak); swim.position.set(0, 0.45, -L / 2 - 0.7); swim.castShadow = true; g.add(swim);
+    // superestrutura: perfil com para-brisa inclinado
+    const sup = new THREE.Shape(); sup.moveTo(-5.2, 0); sup.lineTo(4.6, 0); sup.lineTo(2.6, 1.55); sup.lineTo(-4.6, 1.6); sup.lineTo(-5.2, 1.6); sup.lineTo(-5.2, 0);
+    const supG = new THREE.ExtrudeGeometry(sup, { depth: B * 0.82, bevelEnabled: true, bevelSize: 0.06, bevelThickness: 0.06, bevelSegments: 2 }); supG.translate(0, 0, -B * 0.41);
+    const house = new THREE.Mesh(supG, gel); house.rotation.y = -Math.PI / 2; house.position.set(0, 1.6, 0.4); house.castShadow = true; g.add(house);
+    // vidros escuros da superestrutura
+    const wsh = new THREE.Mesh(new THREE.PlaneGeometry(B * 0.8, 2.3), dark); wsh.position.set(0, 2.42, 4.55); wsh.rotation.x = -0.66; g.add(wsh);
+    [-1, 1].forEach((sd) => { const sw = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.85, 6.4), dark); sw.position.set(sd * (B * 0.41 + 0.07), 2.45, 0.2); g.add(sw); });
+    // flybridge com hardtop e arco
+    const fly = new THREE.Mesh(new THREE.BoxGeometry(B * 0.8, 0.12, 7.2), gel); fly.position.set(0, 3.27, -1.6); fly.castShadow = true; g.add(fly);
+    const flyRail = new THREE.Mesh(new THREE.BoxGeometry(B * 0.82, 0.55, 0.1), gel); flyRail.position.set(0, 3.55, 1.95); g.add(flyRail);
+    const seat = new THREE.Mesh(new THREE.BoxGeometry(B * 0.6, 0.4, 1.2), std(0xe8e2d6, 0.9)); seat.position.set(0, 3.53, -3.4); g.add(seat);
+    [-1, 1].forEach((sd) => { const leg = new THREE.Mesh(new THREE.BoxGeometry(0.12, 1.25, 0.5), gel); leg.position.set(sd * B * 0.36, 3.95, -0.9); leg.rotation.z = sd * -0.12; g.add(leg); });
+    const top = new THREE.Mesh(new THREE.BoxGeometry(B * 0.86, 0.09, 4.2), gel); top.position.set(0, 4.6, -1.3); top.castShadow = true; g.add(top);
+    const radar = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.18, 20), std(0xffffff, 0.3)); radar.position.set(0, 4.75, -0.6); g.add(radar);
+    // guarda-mancebo de inox na proa
+    [-1, 1].forEach((sd) => { const pts = []; for (let k = 0; k <= 10; k++) { const u = 0.62 + k * 0.034; pts.push(new THREE.Vector3(sd * (half(u) - 0.12), sheer(u) + 0.6, u * L - L / 2)); } const rail = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.025, 6), chrome); g.add(rail); });
+    g.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+    return g;
+  }
+  const boat = makeYacht(); s5.g.add(boat);
+  boat.position.set(PX + 1.2 + 2.45 + 0.45, -0.15, 15.5);
+  put(s5, boat);
 
   // luzes noturnas
   const poolLight = new THREE.PointLight(0x5fd2ff, 0, 12); poolLight.position.set(-5.2, Y0 + 0.4, -3.2); scene.add(poolLight);
@@ -295,7 +345,7 @@
     poolLight.intensity = night * 2.5; inLight1.intensity = night * 2.2; inLight2.intensity = night * 2;
 
     water.material.uniforms.time.value = t * 0.45;
-    boat.rotation.z = Math.sin(t * 0.8) * 0.025; boat.rotation.x = Math.sin(t * 0.6) * 0.012; boat.position.y = 0.05 + Math.sin(t * 1.1) * 0.05;
+    boat.rotation.z = Math.sin(t * 0.8) * 0.025; boat.rotation.x = Math.sin(t * 0.6) * 0.012; boat.position.y = -0.15 + Math.sin(t * 1.1) * 0.05;
     palms.forEach((p, i) => { p.rotation.z = Math.sin(t * 0.7 + i) * 0.03; p.rotation.x = Math.cos(t * 0.5 + i) * 0.02; });
 
     // câmera de cinema: drone alto que desce e circula a casa
@@ -304,7 +354,7 @@
     camera.position.set(Math.sin(ang) * rad, 15 - prog * 8 + Math.sin(t * 0.3) * 0.15, Math.cos(ang) * rad + 4);
     look.set(1, 6 - prog * 2.5, -8 + prog * 3);
     const close = ease((prog - 0.68) / 0.32) * 0.8;
-    if (close > 0) { camera.position.lerp(closePos.set(13 + Math.sin(t * 0.15) * 0.3, 4.6, 13), close); look.lerp(closeLook.set(-1.5, 2.4, -8.5), close); }
+    if (close > 0) { camera.position.lerp(closePos.set(-3 + Math.sin(t * 0.15) * 0.3, 4.4, 15), close); look.lerp(closeLook.set(-1.5, 2.4, -8.5), close); }
     camera.lookAt(look);
 
     const idx = Math.min(caps.length - 1, Math.floor(prog * caps.length * 0.999));
