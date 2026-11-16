@@ -129,6 +129,23 @@
     .sem3d #cena{background:radial-gradient(80% 60% at 50% 70%,rgba(241,199,106,.16),transparent 60%),radial-gradient(60% 50% at 80% 20%,rgba(255,122,24,.10),transparent 60%),var(--bg)}
     .sem3d #obra{height:100vh}.sem3d .caps,.sem3d .progresso{display:none}
 
+
+    /* ABERTURA FOTOGRÁFICA */
+    #cinema{position:relative;height:320vh}
+    #cinema .tela{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;background:var(--bg2)}
+    .quadro{position:absolute;inset:0;will-change:transform,opacity}
+    .quadro img{width:100%;height:100%;object-fit:cover;display:block}
+    .q-noite{opacity:0}
+    .veu{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 90% at 50% 45%,transparent 50%,rgba(5,8,20,.6) 100%),linear-gradient(180deg,rgba(5,8,20,.62) 0%,rgba(5,8,20,.18) 35%,rgba(5,8,20,.1) 60%,rgba(5,8,20,.8) 100%)}
+    .cin-caps{position:absolute;z-index:2;left:clamp(22px,5vw,64px);bottom:clamp(48px,10vh,96px);width:min(520px,86vw)}
+    .cin-cap{position:absolute;left:0;bottom:0;opacity:0;transform:translateY(18px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+    .cin-cap.on{opacity:1;transform:none}
+    .cin-cap h2{font-family:var(--serif);font-weight:300;font-size:clamp(32px,4.4vw,56px);line-height:1.05;margin:10px 0 0}
+    .cin-cap h2 i{color:var(--gold)}
+    @media (max-width:700px){#cinema .veu{background:linear-gradient(180deg,rgba(5,8,20,.78) 0%,rgba(5,8,20,.5) 45%,rgba(5,8,20,.35) 65%,rgba(5,8,20,.88) 100%)}}
+    @media (max-height:900px){#cinema .desca{display:none}}
+    #obra .obra-titulo{position:absolute;z-index:2;top:clamp(90px,14vh,130px);left:0;right:0;text-align:center;opacity:0;transition:opacity .8s}
+    body.construindo #obra .obra-titulo{opacity:1}
     /* SEÇÕES */
     section.s{padding:clamp(110px,16vw,200px) 0;position:relative}
     .manifesto{text-align:center}
@@ -255,26 +272,40 @@
   </header>
 
   <main>
-    <!-- A OBRA EM 3D: a casa se constrói conforme a rolagem -->
-    <section id="obra" aria-label="Animação: uma casa à beira-mar sendo construída etapa por etapa">
+    <!-- ABERTURA: renders fotográficos, da tarde para a noite conforme a rolagem -->
+    <section id="cinema" aria-label="Casa à beira-mar construída pela Group, ao entardecer e à noite (imagens ilustrativas)">
       <div class="tela">
-        <div id="cena"></div>
+        <div class="quadro q-tarde"><picture><source media="(max-width:700px)" srcset="assets/render/tarde-mobile.webp"><source media="(max-width:1500px)" srcset="assets/render/tarde-1600.webp"><img src="assets/render/tarde-2400.webp" alt="Casa contemporânea com deck, piscina e píer na Costa Verde, ao entardecer" fetchpriority="high"></picture></div>
+        <div class="quadro q-noite"><picture><source media="(max-width:700px)" srcset="assets/render/noite-mobile.webp"><source media="(max-width:1500px)" srcset="assets/render/noite-1600.webp"><img src="assets/render/noite-2400.webp" alt="A mesma casa à noite, com as luzes da sala, da piscina e do píer acesas" loading="eager"></picture></div>
+        <div class="veu"></div>
         <div class="intro" id="intro">
           <div class="eyebrow fade-in">Group Construtora · Costa Verde e Rio</div>
           <h1><span class="rise"><span>Construímos</span></span><span class="rise d1"><span>o seu</span></span><span class="rise d2"><span><i>sonho.</i></span></span></h1>
           <p class="fade-in">Obras, reformas e manutenção predial de alto padrão na Costa Verde e nas áreas nobres do Rio de Janeiro.</p>
           <a class="pill fade-in" href="#convite"><span class="dot"></span>Agendar uma visita privada</a>
         </div>
+        <div class="cin-caps" aria-hidden="true">
+          <div class="cin-cap" data-cin="0.34"><span class="eyebrow">Do alicerce ao acabamento</span><h2>Cada detalhe,<br><i>pensado para durar.</i></h2></div>
+          <div class="cin-cap" data-cin="0.72"><span class="eyebrow">A entrega</span><h2>As luzes acendem.<br><i>O sonho tem endereço.</i></h2></div>
+        </div>
+        <div class="desca" id="desca">Role para descobrir</div>
+      </div>
+    </section>
+
+    <!-- A OBRA EM 3D: a casa se constrói conforme a rolagem -->
+    <section id="obra" aria-label="Animação: uma casa à beira-mar sendo construída etapa por etapa">
+      <div class="tela">
+        <div id="cena"></div>
+        <div class="obra-titulo" aria-hidden="true"><span class="eyebrow">A obra, etapa por etapa</span></div>
         <div class="caps" aria-hidden="true">
           <div class="cap" data-etapa><span class="n">I</span><h2>Fundação</h2><p>Tudo começa pelo que não se vê.</p></div>
           <div class="cap" data-etapa><span class="n">II</span><h2>Estrutura</h2><p>Pilares e lajes no lugar, no prumo e no nível.</p></div>
           <div class="cap" data-etapa><span class="n">III</span><h2>Fechamentos</h2><p>Vidro, madeira e luz natural.</p></div>
           <div class="cap" data-etapa><span class="n">IV</span><h2>Cobertura, deck e píer</h2><p>A casa encontra o mar.</p></div>
           <div class="cap" data-etapa><span class="n">V</span><h2>Acabamento</h2><p>O detalhe que ninguém esquece.</p></div>
-          <div class="cap" data-etapa><span class="n">VI</span><h2>Entrega</h2><p>As luzes acendem. O sonho tem endereço.</p></div>
+          <div class="cap" data-etapa><span class="n">VI</span><h2>Entrega</h2><p>Vistoria final ao seu lado e a casa pronta.</p></div>
         </div>
         <div class="progresso" aria-hidden="true"><small>A obra</small><div class="linha"><i id="obraBarra"></i></div></div>
-        <div class="desca" id="desca">Role para construir</div>
       </div>
     </section>
 
@@ -415,7 +446,7 @@
       <div><h4>Endereço</h4><p>R. Manoel da Silva Oliveira, 80 – Galpão</p><p>Camorim Pequeno · Angra dos Reis · RJ</p><p>CEP 23912-060</p></div>
       <div><h4>Contato</h4><p><a class="js-wa" href="#" target="_blank" rel="noopener">(24) 99929-7179</a></p><p><a href="mailto:groupconstrutora333@gmail.com">groupconstrutora333@gmail.com</a></p><p><a class="js-insta" href="#" target="_blank" rel="noopener">Instagram</a></p></div>
     </div>
-    <div class="wrap" style="margin-top:40px">© <span id="ano"></span> Group Construtora · Animação 3D ilustrativa · Mobiliário 3D: Wayfair (CC BY 4.0), Khronos glTF Sample Assets</div>
+    <div class="wrap" style="margin-top:40px">© <span id="ano"></span> Group Construtora · Imagens e animação 3D ilustrativas · Mobiliário 3D: Wayfair (CC BY 4.0), Khronos glTF Sample Assets</div>
   </footer>
 
   <a class="wa js-wa" href="#" target="_blank" rel="noopener" aria-label="Falar no WhatsApp" data-msg="Olá! Vim pelo site e gostaria de agendar uma visita.">
@@ -437,7 +468,20 @@
     document.getElementById("ano").textContent = new Date().getFullYear();
 
     const topBar = document.getElementById("top"), intro = document.getElementById("intro"), desca = document.getElementById("desca");
-    function onScroll(){ const y = scrollY; topBar.classList.toggle("solid", y > innerHeight * 0.9); intro.classList.toggle("out", y > innerHeight * 0.35); document.body.classList.toggle("construindo", y > innerHeight * 0.35); desca.style.opacity = y > 40 ? 0 : 1; }
+    const cin = document.getElementById("cinema"), qT = cin.querySelector(".q-tarde"), qN = cin.querySelector(".q-noite"), cinCaps = [...cin.querySelectorAll(".cin-cap")], obraEl = document.getElementById("obra");
+    const sm = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    let ticking = false;
+    function onScroll(){ if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false;
+      const y = scrollY, r = cin.getBoundingClientRect(), p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight)));
+      topBar.classList.toggle("solid", y > innerHeight * 0.9);
+      intro.classList.toggle("out", p > 0.12);
+      desca.style.opacity = y > 40 ? 0 : 1;
+      const n = sm(0.5, 0.82, p);
+      qT.style.transform = `scale(${1.02 + p * 0.12}) translateY(${p * -2}%)`;
+      qN.style.opacity = n; qN.style.transform = `scale(${1.1 - n * 0.06})`;
+      cinCaps.forEach((c, i) => { const at = +c.dataset.cin, nx = cinCaps[i + 1] ? +cinCaps[i + 1].dataset.cin : 1.01; c.classList.toggle("on", p >= at && p < nx); });
+      const o = obraEl.getBoundingClientRect(); document.body.classList.toggle("construindo", o.top < innerHeight * 0.2 && o.bottom > innerHeight * 0.8);
+    }); }
     addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .2 });
