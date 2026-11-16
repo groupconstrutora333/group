@@ -134,6 +134,7 @@
     .facts div{padding:22px 20px 26px;border-right:1px solid var(--line)}
     .facts div:last-child{border-right:0}
     .facts b{display:block;font-size:15px}
+    .facts .nw{white-space:nowrap}
     .facts span{display:block;color:var(--soft);font-size:13px;margin-top:4px}
     @media (max-width:860px){.facts{grid-template-columns:1fr 1fr}.facts div:nth-child(2){border-right:0}.facts div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
 
@@ -169,6 +170,7 @@
     .deliver li span{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--gold);font-size:12px;padding-top:3px;min-width:28px}
     .doc{border:1px solid var(--line);padding:18px;background:rgba(7,10,20,.45)}
     .doc svg{display:block;width:100%;height:auto}
+    .doc .ln:not(.dim){stroke-dasharray:var(--len,1200);stroke-dashoffset:var(--len,1200)}
 
     .types{display:grid;grid-template-columns:repeat(3,1fr);border-left:1px solid var(--line);border-top:1px solid var(--line)}
     @media (max-width:900px){.types{grid-template-columns:1fr 1fr}}
@@ -353,7 +355,7 @@
           <div><b>Base em Angra dos Reis</b><span>Atendimento no continente e nas ilhas</span></div>
           <div><b>Proposta por escrito</b><span>Escopo, etapas e prazos definidos</span></div>
           <div><b>Um responsável</b><span>Um único contato do início ao fim</span></div>
-          <div><b>CNPJ 50.935.637/0001-48</b><span>Empresa formalizada</span></div>
+          <div><b>CNPJ <span class="nw">50.935.637/0001-48</span></b><span>Empresa formalizada</span></div>
         </div>
       </div>
     </section>
@@ -432,7 +434,7 @@
         <div class="plans rv-st">
           <div class="plan"><span class="k">A</span><h3>Obra ou reforma</h3><p class="for">Para construir, ampliar ou reformar.</p><div class="how">Orçamento por escopo</div>
             <ul><li>Visita técnica quando necessário</li><li>Proposta detalhada por escrito</li><li>Cronograma por etapas</li><li>Compra e logística de materiais</li><li>Acompanhamento até a entrega</li></ul>
-            <a class="btn js-plan" href="#contato" data-servico="Reforma">Solicitar orçamento <span class="arr">→</span></a></div>
+            <a class="btn js-plan" href="#contato" data-servico="">Solicitar orçamento <span class="arr">→</span></a></div>
           <div class="plan main"><span class="k">B</span><h3>Manutenção mensal</h3><p class="for">Para pousadas, condomínios, casas de temporada e administradoras.</p><div class="how">Mensalidade fixa · sob consulta</div>
             <ul><li>Um único contato para todas as manutenções</li><li>Triagem das solicitações e definição do profissional</li><li>Controle de materiais, compras e traslado</li><li>Acompanhamento da execução e prestação de contas</li><li>Mão de obra e materiais apurados por atendimento</li></ul>
             <a class="btn solid js-plan" href="#contato" data-servico="Contrato mensal de manutenção">Conhecer o plano <span class="arr">→</span></a></div>
