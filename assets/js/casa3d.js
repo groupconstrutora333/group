@@ -11,12 +11,12 @@
   catch (e) { return fail(); }
 
   const small = Math.min(innerWidth, innerHeight) < 700;
-  renderer.setPixelRatio(Math.min(small ? 1.6 : 2, devicePixelRatio || 1));
+  renderer.setPixelRatio(Math.min(small ? 1.25 : 2, devicePixelRatio || 1));
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.8;
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = small ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap; // sombra suave só no desktop
   holder.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
@@ -28,7 +28,7 @@
   const normals = new THREE.TextureLoader().load("assets/img/waternormals.jpg", (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; });
   normals.wrapS = normals.wrapT = THREE.RepeatWrapping;
   const water = new THREE.Water(new THREE.PlaneGeometry(3000, 3000), {
-    textureWidth: small ? 512 : 1024, textureHeight: small ? 512 : 1024,
+    textureWidth: small ? 256 : 1024, textureHeight: small ? 256 : 1024,
     waterNormals: normals, sunDirection: new THREE.Vector3(0, 1, 0), sunColor: 0xffe2b8,
     waterColor: 0x0b4456, distortionScale: 2.2, fog: false
   });
@@ -103,7 +103,7 @@
     if (z > -22 && z < shore && Math.abs(x) > 15) h += noise(x, z) * 0.12;
     return h;
   }
-  const tg = new THREE.PlaneGeometry(130, 110, small ? 110 : 180, small ? 90 : 150); tg.rotateX(-Math.PI / 2);
+  const tg = new THREE.PlaneGeometry(130, 110, small ? 72 : 180, small ? 60 : 150); tg.rotateX(-Math.PI / 2);
   const tp = tg.attributes.position, cols = [];
   const cSand = new THREE.Color(0xb59a72), cGrass = new THREE.Color(0x2c4524), cLawn = new THREE.Color(0x34502a), cForest = new THREE.Color(0x1f3a1c), cRock = new THREE.Color(0x4a443c);
   for (let i = 0; i < tp.count; i++) {
@@ -121,8 +121,8 @@
 
   // mata (copas instanciadas)
   const dm = new THREE.Object3D(), tc = new THREE.Color();
-  const N_TREES = small ? 420 : 900;
-  const cGeo = new THREE.SphereGeometry(1, 12, 9); { const q = cGeo.attributes.position; for (let i = 0; i < q.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(q, i); v.multiplyScalar(0.8 + 0.35 * Math.abs(Math.sin(v.x * 5 + v.y * 3) * Math.cos(v.z * 4))); q.setXYZ(i, v.x, v.y, v.z); } cGeo.computeVertexNormals(); }
+  const N_TREES = small ? 260 : 900;
+  const cGeo = new THREE.SphereGeometry(1, small ? 8 : 12, small ? 6 : 9); { const q = cGeo.attributes.position; for (let i = 0; i < q.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(q, i); v.multiplyScalar(0.8 + 0.35 * Math.abs(Math.sin(v.x * 5 + v.y * 3) * Math.cos(v.z * 4))); q.setXYZ(i, v.x, v.y, v.z); } cGeo.computeVertexNormals(); }
   const canopy = new THREE.InstancedMesh(cGeo, std(0xffffff, 1, 0, { envMapIntensity: 0.3 }), N_TREES);
   canopy.castShadow = true; canopy.receiveShadow = true;
   for (let i = 0; i < N_TREES; i++) {
@@ -137,7 +137,7 @@
   scene.add(canopy);
 
   // costão de pedras arredondadas
-  const N_ROCKS = 140;
+  const N_ROCKS = small ? 90 : 140;
   const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 1), mStone, N_ROCKS); rocks.castShadow = true; rocks.receiveShadow = true;
   for (let i = 0; i < N_ROCKS; i++) {
     const x = -34 + rnd() * 42, shore = shoreZ(x), z0 = shore - 0.6 + rnd() * 3.2, z = (x > -14.5 && x < 7.6) ? Math.max(z0, 5.6 + rnd() * 1.5) : z0;
@@ -309,6 +309,7 @@
     const place = (url, list) => gl.load(url, (g) => {
       const lights = []; g.scene.traverse((o) => { if (o.isLight) lights.push(o); if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } }); lights.forEach((l) => l.parent.remove(l));
       list.forEach(([x, y, z, ry, sc]) => { const m = g.scene.clone(true); m.position.set(x, y, z); m.rotation.y = ry; m.scale.setScalar(sc || 1); m.visible = false; s5.g.add(m); put(s5, m); });
+      stdMats = null; lastEnvK = -1;
     });
     place("assets/3d/GlamVelvetSofa.glb", [[-4, Y1, -10.2, 0, 1.15], [3.5, Y2, -9.8, 0, 1.1]]);
     place("assets/3d/SheenChair.glb", [[-1.2, Y1, -8.4, -0.6, 1.1], [-6.8, Y1, -8.4, 0.6, 1.1], [1.5, Y0 + 0.18, -1.5, -0.4, 1.1], [3.6, Y0 + 0.18, -1.2, 0.5, 1.1]]);
@@ -329,6 +330,7 @@
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   let last = performance.now(), running = true;
+  let stdMats = null, lastEnvK = -1; // materiais PBR coletados uma vez (refeito quando chega o glTF)
   new IntersectionObserver((es) => es.forEach((e) => { const was = running; running = e.isIntersecting; if (running && !was) { last = performance.now(); requestAnimationFrame(loop); } })).observe(holder);
 
   const look = new THREE.Vector3(), closePos = new THREE.Vector3(), closeLook = new THREE.Vector3();
@@ -358,7 +360,8 @@
     sun.intensity = Math.max(0, 2.2 * Math.min(1, (elev + 1) / 6));
     hemi.intensity = 0.35 - night * 0.29;
     const envK = (hdrReady ? 0.55 : 1) * (1 - night * 0.94);
-    scene.traverse((o) => { const m = o.material; if (m && m.isMeshStandardMaterial) { if (m.userData.env0 === undefined) m.userData.env0 = m.envMapIntensity; m.envMapIntensity = m.userData.env0 * envK; } });
+    if (!stdMats) { stdMats = new Set(); scene.traverse((o) => { const m = o.material; if (m && m.isMeshStandardMaterial) { if (m.userData.env0 === undefined) m.userData.env0 = m.envMapIntensity; stdMats.add(m); } }); }
+    if (envK !== lastEnvK) { lastEnvK = envK; stdMats.forEach((m) => (m.envMapIntensity = m.userData.env0 * envK)); }
     scene.fog.color.setRGB(0.49 - night * 0.43, 0.54 - night * 0.47, 0.63 - night * 0.52);
     renderer.toneMappingExposure = 0.8 - night * 0.3;
     mInner.emissiveIntensity = 0.05 + night * 5;
