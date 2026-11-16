@@ -140,7 +140,7 @@
   const N_ROCKS = 140;
   const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 1), mStone, N_ROCKS); rocks.castShadow = true; rocks.receiveShadow = true;
   for (let i = 0; i < N_ROCKS; i++) {
-    const x = -34 + rnd() * 42, shore = shoreZ(x), z = shore - 0.6 + rnd() * 3.2;
+    const x = -34 + rnd() * 42, shore = shoreZ(x), z0 = shore - 0.6 + rnd() * 3.2, z = (x > -14.5 && x < 7.6) ? Math.max(z0, 5.6 + rnd() * 1.5) : z0;
     const s = 0.35 + Math.pow(rnd(), 2) * 1.5;
     dm.position.set(x, -0.25 + s * 0.35, z); dm.scale.set(s * (1 + rnd() * 0.6), s * 0.7, s); dm.rotation.set(rnd() * 3, rnd() * 3, rnd() * 3);
     dm.updateMatrix(); rocks.setMatrixAt(i, dm.matrix);
@@ -209,6 +209,27 @@
     put(s4, cyl(0.13, 3.2, mWoodDark, PX + 1.1, -0.3, 1.6 + i * (PL / 10), s4.g, 8));
   }
   put(s4, box(7.5, 0.16, 4.5, mDeck, PX, 1.15, PL + 3, s4.g));
+  // deck avançado sobre o costão e saias de madeira (réguas horizontais fechando as laterais)
+  const mSkirt = std(0xa06c45, 0.65, 0, woodTex(6, 1, 0));
+  const DK = Y0 + 0.18; // topo do deck
+  put(s4, box(20.5, 0.18, 4.2, mDeck, -3.25, DK - 0.09, 2.5, s4.g));
+  function skirt(x1, z1, x2, z2, top, bottom) {
+    const len = Math.hypot(x2 - x1, z2 - z1), ang = Math.atan2(z2 - z1, x2 - x1);
+    for (let y = top - 0.08; y > bottom; y -= 0.15) {
+      const b = box(len, 0.12, 0.035, mSkirt, (x1 + x2) / 2, y, (z1 + z2) / 2, s4.g); b.rotation.y = -ang; put(s4, b);
+    }
+    // testeira (acabamento superior)
+    const t = box(len + 0.04, 0.05, 0.06, mDeck, (x1 + x2) / 2, top + 0.005, (z1 + z2) / 2, s4.g); t.rotation.y = -ang; put(s4, t);
+  }
+  skirt(-13.5, 4.62, 7.0, 4.62, DK, -0.45);   // frente voltada para o mar
+  skirt(-13.52, -6.8, -13.52, 4.6, DK, -0.3); // lateral oeste
+  skirt(7.02, 0.4, 7.02, 4.6, DK, -0.3);      // lateral junto ao píer
+  skirt(13.52, -6.8, 13.52, 0.4, DK, 0.35);   // lateral leste
+  // saia da plataforma do píer
+  const PZ0 = PL + 0.75, PZ1 = PL + 5.25, PX0 = PX - 3.75, PX1 = PX + 3.75;
+  skirt(PX0, PZ1, PX1, PZ1, 1.23, 0.25);
+  skirt(PX0, PZ0, PX0, PZ1, 1.23, 0.25);
+  skirt(PX1, PZ0, PX1, PZ1, 1.23, 0.25);
   for (let i = 0; i < 2; i++) put(s4, box(0.05, 0.05, PL, mFrame, PX - 1.15 + i * 2.3, 2.05, 1 + PL / 2, s4.g));
   for (let i = 0; i <= 15; i++) for (let k = 0; k < 2; k++) put(s4, box(0.05, 0.9, 0.05, mFrame, PX - 1.15 + k * 2.3, 1.6, 1 + i * 2, s4.g));
 
