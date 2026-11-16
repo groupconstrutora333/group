@@ -1,229 +1,294 @@
-/* Group Construtora — casa à beira-mar em 3D que se constrói com a rolagem (obra em etapas: 4D) */
+/* Group Construtora — render 3D em tempo real: casa à beira-mar construída com a rolagem.
+   Céu físico, mar com reflexo, luz de fim de tarde que vira noite na entrega. */
 (function () {
   const stage = document.getElementById("obra");
   const holder = document.getElementById("cena");
   if (!stage || !holder) return;
   const fail = () => document.documentElement.classList.add("sem3d");
-  if (!window.THREE) return fail();
+  if (!window.THREE || !THREE.Sky || !THREE.Water) return fail();
   let renderer;
-  try {
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: "high-performance" });
-  } catch (e) { return fail(); }
+  try { renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); }
+  catch (e) { return fail(); }
 
   const small = Math.min(innerWidth, innerHeight) < 700;
-  renderer.setPixelRatio(Math.min(small ? 1.5 : 2, devicePixelRatio || 1));
+  renderer.setPixelRatio(Math.min(small ? 1.6 : 2, devicePixelRatio || 1));
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 0.92;
-  renderer.shadowMap.enabled = !small;
+  renderer.toneMappingExposure = 0.8;
+  renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   holder.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const SKY_DAY = new THREE.Color(0x0e1a36), SKY_NIGHT = new THREE.Color(0x050814);
-  scene.background = SKY_DAY.clone();
-  scene.fog = new THREE.Fog(0x0b1530, 70, 190);
-  const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 600);
+  scene.fog = new THREE.FogExp2(0x7d8aa0, 0.0065);
+  const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 4000);
+  const rnd = (() => { let s = 7; return () => (s = (s * 16807) % 2147483647) / 2147483647; })();
+
+  // ---------- mar com reflexo ----------
+  const normals = new THREE.TextureLoader().load("assets/img/waternormals.jpg", (t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; });
+  normals.wrapS = normals.wrapT = THREE.RepeatWrapping;
+  const water = new THREE.Water(new THREE.PlaneGeometry(3000, 3000), {
+    textureWidth: small ? 512 : 1024, textureHeight: small ? 512 : 1024,
+    waterNormals: normals, sunDirection: new THREE.Vector3(0, 1, 0), sunColor: 0xffe2b8,
+    waterColor: 0x0b4456, distortionScale: 2.2, fog: false
+  });
+  water.rotation.x = -Math.PI / 2; water.material.uniforms.size.value = 3.2;
+  scene.add(water);
+
+  // ---------- céu físico + sol ----------
+  const sky = new THREE.Sky(); sky.scale.setScalar(4000); scene.add(sky);
+  const su = sky.material.uniforms;
+  su.turbidity.value = 7; su.rayleigh.value = 2.2; su.mieCoefficient.value = 0.006; su.mieDirectionalG.value = 0.86;
+  const sunDir = new THREE.Vector3();
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  let envRT = null, lastEnvKey = null;
+  function setSun(elev, azim) {
+    const phi = THREE.MathUtils.degToRad(90 - elev), theta = THREE.MathUtils.degToRad(azim);
+    sunDir.setFromSphericalCoords(1, phi, theta);
+    su.sunPosition.value.copy(sunDir);
+    water.material.uniforms.sunDirection.value.copy(sunDir).normalize();
+    const key = Math.round(elev * 2);
+    if (key !== lastEnvKey) { lastEnvKey = key; if (envRT) envRT.dispose(); envRT = pmrem.fromScene(sky); scene.environment = envRT.texture; }
+  }
 
   // ---------- luz ----------
-  const hemi = new THREE.HemisphereLight(0xcfe0ff, 0x1a2234, 0.55); scene.add(hemi);
-  const sun = new THREE.DirectionalLight(0xffcf96, 1.25);
-  sun.position.set(-40, 38, 30); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
-  Object.assign(sun.shadow.camera, { left: -40, right: 40, top: 40, bottom: -40, near: 1, far: 160 });
-  sun.shadow.bias = -0.0004; scene.add(sun);
-  const rim = new THREE.DirectionalLight(0x8fb4ff, 0.35); rim.position.set(30, 20, -30); scene.add(rim);
+  const hemi = new THREE.HemisphereLight(0xbcd2ff, 0x2a2418, 0.35); scene.add(hemi);
+  const sun = new THREE.DirectionalLight(0xffc98e, 2.2);
+  sun.castShadow = true; sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
+  Object.assign(sun.shadow.camera, { left: -38, right: 38, top: 38, bottom: -38, near: 1, far: 260 });
+  sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02;
+  scene.add(sun); scene.add(sun.target); sun.target.position.set(0, 0, -6);
 
-  // ---------- materiais ----------
-  const M = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: 0.8, metalness: 0 }, o));
-  const mConcrete = M(0xe9e4da, { roughness: 0.9 });
-  const mSlab = M(0xf4f1ea, { roughness: 0.85 });
-  const mWood = M(0x8a5a36, { roughness: 0.7 });
-  const mWoodDark = M(0x5c3a22, { roughness: 0.75 });
-  const mDeck = M(0x9b6a43, { roughness: 0.75 });
-  const mGlass = new THREE.MeshPhysicalMaterial({ color: 0x9fc3dd, metalness: 0.1, roughness: 0.05, transparent: true, opacity: 0.32, emissive: 0x000000 });
-  const mFrame = M(0x1c1f26, { roughness: 0.5, metalness: 0.6 });
-  const mStone = M(0x34383f, { roughness: 1 });
-  const mGrass = M(0x1c3527, { roughness: 1 });
-  const mSand = M(0x9c8662, { roughness: 1 });
-  const mGold = M(0xf1c76a, { roughness: 0.35, metalness: 0.6, emissive: 0x3a2a08, emissiveIntensity: 0.4 });
-  const mPool = new THREE.MeshStandardMaterial({ color: 0x3fb6d8, roughness: 0.08, metalness: 0.2, emissive: 0x0b4a63, emissiveIntensity: 0.35 });
-  const mWarm = new THREE.MeshStandardMaterial({ color: 0xffd9a0, emissive: 0xffb45c, emissiveIntensity: 0 });
+  // ---------- materiais (PBR) ----------
+  const std = (c, r, m = 0, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: r, metalness: m }, o));
+  const mWhite = std(0xf1ede4, 0.62);
+  const mConcrete = std(0xc9c4ba, 0.85);
+  const mWood = std(0x7b4b2a, 0.55);
+  const mWoodDark = std(0x4a2d1a, 0.6);
+  const mDeck = std(0x8e5f3c, 0.6);
+  const mGlass = std(0x1b2a38, 0.04, 0.9, { transparent: true, opacity: 0.62, envMapIntensity: 1.6 });
+  const mFrame = std(0x1a1c20, 0.35, 0.8);
+  const mGold = std(0xf1c76a, 0.28, 0.9);
+  const mStone = std(0xffffff, 0.92);
+  const mPool = std(0x2aa6c6, 0.05, 0.1, { emissive: 0x0b5a75, emissiveIntensity: 0.25, envMapIntensity: 1.4 });
+  const mInner = std(0x2a2520, 0.9, 0, { emissive: 0xffb15c, emissiveIntensity: 0 });
+  const mFabric = std(0xe9e2d4, 0.95);
+  const mLeaf = std(0x2b4a24, 0.8, 0, { side: THREE.DoubleSide });
+  const mTrunk = std(0x4a3f33, 0.95);
 
   function box(w, h, d, mat, x, y, z, parent) {
     const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
-    m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
-    (parent || scene).add(m); return m;
+    m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; (parent || scene).add(m); return m;
   }
-  function cyl(r, h, mat, x, y, z, parent, seg = 12) {
+  function cyl(r, h, mat, x, y, z, parent, seg = 14) {
     const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, h, seg), mat);
-    m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
-    (parent || scene).add(m); return m;
+    m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true; (parent || scene).add(m); return m;
   }
 
-  // ---------- mar ----------
-  const seaGeo = new THREE.PlaneGeometry(420, 420, small ? 70 : 120, small ? 70 : 120);
-  seaGeo.rotateX(-Math.PI / 2);
-  const sea = new THREE.Mesh(seaGeo, new THREE.MeshStandardMaterial({ color: 0x0a3446, roughness: 0.45, metalness: 0.2, flatShading: true }));
-  sea.position.y = -0.6; sea.receiveShadow = true; scene.add(sea);
-  const seaBase = seaGeo.attributes.position.array.slice();
+  // ---------- terreno: platô, praia, costão e morro de mata atlântica ----------
+  const noise = (x, z) => Math.sin(x * 0.21 + Math.cos(z * 0.13)) * Math.cos(z * 0.17 - x * 0.05) + 0.5 * Math.sin(x * 0.53 + z * 0.41);
+  const shoreZ = (x) => 4.2 + Math.sin(x * 0.18) * 1.2;
+  function height(x, z) {
+    let h = 0.62;
+    const shore = shoreZ(x);
+    if (z > shore) h = 0.62 - (z - shore) * (x > 14 ? 0.18 : 0.55);
+    const back = -26 - Math.sin(x * 0.1) * 3;
+    if (z < back) h += Math.pow(back - z, 1.25) * 0.24 + noise(x, z) * 0.9;
+    const side = Math.abs(x) - 32;
+    if (side > 0) h += Math.pow(side, 1.3) * 0.35 + noise(z, x) * 1.2;
+    if (z > -22 && z < shore && Math.abs(x) > 15) h += noise(x, z) * 0.12;
+    return h;
+  }
+  const tg = new THREE.PlaneGeometry(130, 110, small ? 110 : 180, small ? 90 : 150); tg.rotateX(-Math.PI / 2);
+  const tp = tg.attributes.position, cols = [];
+  const cSand = new THREE.Color(0xb59a72), cGrass = new THREE.Color(0x2c4524), cLawn = new THREE.Color(0x34502a), cForest = new THREE.Color(0x1f3a1c), cRock = new THREE.Color(0x4a443c);
+  for (let i = 0; i < tp.count; i++) {
+    const x = tp.getX(i), z = tp.getZ(i) - 18, h = height(x, z);
+    tp.setY(i, h); tp.setZ(i, z);
+    let c;
+    if (z > shoreZ(x) - 0.8) c = x > 12 ? cSand : cRock;
+    else if (h > 1.4) c = cForest.clone().lerp(cGrass, Math.max(0, noise(x * 2, z * 2)) * 0.25);
+    else c = (Math.abs(x) < 15 ? cLawn : cGrass).clone().lerp(cForest, Math.max(0, noise(x, z)) * 0.25);
+    cols.push(c.r, c.g, c.b);
+  }
+  tg.setAttribute("color", new THREE.Float32BufferAttribute(cols, 3)); tg.computeVertexNormals();
+  const terrain = new THREE.Mesh(tg, std(0xffffff, 0.95, 0, { vertexColors: true }));
+  terrain.receiveShadow = true; scene.add(terrain);
 
-  // ---------- terreno (costão + grama + areia) ----------
-  const land = new THREE.Group(); scene.add(land);
-  box(60, 3, 40, mStone, 0, -1.6, -14, land);
-  box(56, 0.4, 36, mGrass, 0, 0.05, -15, land);
-  box(30, 0.3, 8, mSand, 22, -0.15, 6, land);
-  const rockGeo = new THREE.DodecahedronGeometry(1, 0);
-  for (let i = 0; i < 46; i++) {
-    const r = new THREE.Mesh(rockGeo, mStone);
-    const s = 0.8 + ((i * 37) % 10) / 6;
-    r.scale.set(s * 1.4, s * 0.8, s);
-    r.position.set(-29 + i * 1.3, -0.6 + ((i * 13) % 5) / 10, 4.2 + Math.sin(i) * 0.9);
-    r.rotation.set(i, i * 2, 0); r.castShadow = true; r.receiveShadow = true; land.add(r);
+  // mata (copas instanciadas)
+  const dm = new THREE.Object3D(), tc = new THREE.Color();
+  const N_TREES = small ? 420 : 900;
+  const cGeo = new THREE.IcosahedronGeometry(1, 2); { const q = cGeo.attributes.position; for (let i = 0; i < q.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(q, i); v.multiplyScalar(0.8 + 0.35 * Math.abs(Math.sin(v.x * 5 + v.y * 3) * Math.cos(v.z * 4))); q.setXYZ(i, v.x, v.y, v.z); } cGeo.computeVertexNormals(); }
+  const canopy = new THREE.InstancedMesh(cGeo, std(0xffffff, 1), N_TREES);
+  canopy.castShadow = true; canopy.receiveShadow = true;
+  for (let i = 0; i < N_TREES; i++) {
+    let x, z, tries = 0;
+    do { x = (rnd() - 0.5) * 128; z = -18 + (rnd() - 0.5) * 108; tries++; } while ((height(x, z) < 1.8 || z > -27 && Math.abs(x) < 34) && tries < 60);
+    const ok = height(x, z) >= 1.8 && !(z > -27 && Math.abs(x) < 34);
+    const s = ok ? 0.9 + rnd() * 1.5 : 0.0001;
+    dm.position.set(x, height(x, z) + s * 0.6, z); dm.scale.set(s, s * (0.7 + rnd() * 0.4), s); dm.rotation.set(rnd(), rnd() * 6, rnd());
+    dm.updateMatrix(); canopy.setMatrixAt(i, dm.matrix);
+    tc.setHSL(0.26 + rnd() * 0.07, 0.28 + rnd() * 0.15, 0.05 + rnd() * 0.05); canopy.setColorAt(i, tc);
   }
-  // vegetação
-  const mLeaf = M(0x173a27, { roughness: 1 });
-  function palm(x, z, h) {
-    const g = new THREE.Group(); g.position.set(x, 0, z); land.add(g);
-    const t = cyl(0.18, h, mWoodDark, 0, h / 2, 0, g, 7); t.rotation.z = 0.08;
-    for (let i = 0; i < 7; i++) {
-      const l = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.05, 3.2), mLeaf);
-      l.position.set(Math.cos(i) * 1.3, h - 0.2, Math.sin(i) * 1.3); l.rotation.y = -i; l.rotation.x = 0.45; l.castShadow = true; g.add(l);
-    }
-  }
-  palm(-22, -6, 7); palm(-25, -14, 8.5); palm(21, -12, 7.5); palm(24, -4, 6.5); palm(-18, -24, 9);
-  for (let i = 0; i < 18; i++) {
-    const b = new THREE.Mesh(new THREE.IcosahedronGeometry(1 + (i % 3) * 0.4, 0), mLeaf);
-    b.position.set(-27 + (i * 7.3) % 54, 0.6, -30 + (i % 4) * 1.5); b.castShadow = true; land.add(b);
-  }
+  scene.add(canopy);
 
-  // ---------- a casa, por etapas ----------
+  // costão de pedras arredondadas
+  const N_ROCKS = 140;
+  const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1, 1), mStone, N_ROCKS); rocks.castShadow = true; rocks.receiveShadow = true;
+  for (let i = 0; i < N_ROCKS; i++) {
+    const x = -34 + rnd() * 42, shore = shoreZ(x), z = shore - 0.6 + rnd() * 3.2;
+    const s = 0.35 + Math.pow(rnd(), 2) * 1.5;
+    dm.position.set(x, -0.25 + s * 0.35, z); dm.scale.set(s * (1 + rnd() * 0.6), s * 0.7, s); dm.rotation.set(rnd() * 3, rnd() * 3, rnd() * 3);
+    dm.updateMatrix(); rocks.setMatrixAt(i, dm.matrix);
+    tc.setHSL(0.08, 0.08, 0.07 + rnd() * 0.06); rocks.setColorAt(i, tc);
+  }
+  scene.add(rocks);
+
+  // palmeiras com tronco curvo e folhas arqueadas
+  const frondGeo = (() => {
+    const g = new THREE.PlaneGeometry(0.9, 4.2, 1, 8); const p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) { const y = p.getY(i) + 2.1, t = y / 4.2; p.setX(i, p.getX(i) * Math.sin(Math.PI * Math.min(1, t * 1.1))); p.setZ(i, -Math.pow(t, 2) * 1.6); p.setY(i, y); }
+    g.rotateX(-Math.PI / 2 + 0.5); g.computeVertexNormals(); return g;
+  })();
+  const palms = [];
+  function palm(x, z, h, lean) {
+    const curve = new THREE.QuadraticBezierCurve3(new THREE.Vector3(0, 0, 0), new THREE.Vector3(lean * 0.4, h * 0.55, lean * 0.2), new THREE.Vector3(lean, h, lean * 0.4));
+    const g = new THREE.Group(); g.position.set(x, height(x, z), z); scene.add(g);
+    const trunk = new THREE.Mesh(new THREE.TubeGeometry(curve, 16, 0.17, 7, false), mTrunk); trunk.castShadow = true; g.add(trunk);
+    const top = new THREE.Group(); top.position.copy(curve.getPoint(1)); g.add(top);
+    for (let i = 0; i < 9; i++) { const f = new THREE.Mesh(frondGeo, mLeaf); f.rotation.y = (i / 9) * Math.PI * 2 + rnd() * 0.3; f.rotation.z = (rnd() - 0.5) * 0.3; f.castShadow = true; top.add(f); }
+    palms.push(top);
+  }
+  [[-21, -4, 8, 1.2], [-24, -12, 9.5, -0.8], [19, -11, 8.5, 1.4], [23, -2, 7, 1.8], [-17, -19, 10, 0.6], [26, 3.5, 7.5, 2.2], [-27, 1, 7.2, -1.4]].forEach((a) => palm(...a));
+
+  // ---------- a casa, por etapas (4D) ----------
   const stages = [];
-  function addStage() { const g = new THREE.Group(); scene.add(g); stages.push({ g, items: [] }); return stages[stages.length - 1]; }
-  function put(st, mesh) { mesh.userData.final = mesh.position.clone(); mesh.userData.scaleFinal = mesh.scale.clone(); st.items.push(mesh); return mesh; }
+  const addStage = () => { const g = new THREE.Group(); scene.add(g); const st = { g, items: [] }; stages.push(st); return st; };
+  const put = (st, m) => { m.userData.final = m.position.clone(); m.userData.scaleFinal = m.scale.clone(); st.items.push(m); return m; };
+  const H1 = 3.4, H2 = 3.2, Y0 = 0.62, Y1 = Y0 + 0.5, Y2 = Y1 + H1 + 0.35;
 
-  // casa: térreo 18 x 9, pavimento superior 20 x 8 em balanço sobre o deck
-  const H1 = 3.3, H2 = 3.2;
-  // 1. fundação e pilotis
-  const s1 = addStage();
-  put(s1, box(19, 0.6, 10, mConcrete, 0, 0.3, -12, s1.g));
-  for (let i = 0; i < 6; i++) put(s1, box(0.6, 0.6, 0.6, mConcrete, -8 + i * 3.2, 0.3, -6.5, s1.g));
-  // 2. estrutura (pilares + lajes)
-  const s2 = addStage();
-  [[-9, -16.5], [-9, -7.5], [0, -16.5], [0, -7.5], [9, -16.5], [9, -7.5]].forEach(([x, z]) => put(s2, box(0.35, H1, 0.35, mSlab, x, 0.6 + H1 / 2, z, s2.g)));
-  put(s2, box(21, 0.35, 10.5, mSlab, 1, 0.6 + H1 + 0.17, -11.2, s2.g));
-  [[-9, -15], [11, -15], [-9, -7.5], [11, -7.5]].forEach(([x, z]) => put(s2, box(0.3, H2, 0.3, mSlab, x, 0.95 + H1 + H2 / 2, z, s2.g)));
-  put(s2, box(22, 0.3, 9.5, mSlab, 1, 0.95 + H1 + H2 + 0.15, -11, s2.g));
-  // 3. fechamentos: vidro, madeira e caixilhos
-  const s3 = addStage();
-  put(s3, box(17.4, H1 - 0.1, 0.06, mGlass, 0, 0.6 + H1 / 2, -7.4, s3.g));
-  for (let i = 0; i < 7; i++) put(s3, box(0.06, H1, 0.1, mFrame, -8.7 + i * 2.9, 0.6 + H1 / 2, -7.38, s3.g));
-  put(s3, box(0.25, H1, 9, mConcrete, -9, 0.6 + H1 / 2, -12, s3.g));
-  put(s3, box(18, H1, 0.25, mConcrete, 0, 0.6 + H1 / 2, -16.6, s3.g));
-  const yUp = 0.95 + H1 + H2 / 2;
-  for (let i = 0; i < 36; i++) put(s3, box(0.12, H2 - 0.2, 0.22, mWood, -9 + i * 0.58, yUp, -6.9, s3.g));
-  put(s3, box(9, H2 - 0.2, 0.06, mGlass, 6.3, yUp, -6.82, s3.g));
-  put(s3, box(0.25, H2, 8, mWood, 11.1, yUp, -11, s3.g));
-  put(s3, box(20, H2, 0.25, mConcrete, 1, yUp, -15, s3.g));
-  // janelas acesas (à noite)
-  const warm = [];
-  [[-6, -7.6], [-1, -7.6], [4, -7.6]].forEach(([x, z]) => { const w = box(3.6, H1 - 0.8, 0.02, mWarm, x, 0.6 + H1 / 2, z - 0.15, s3.g); warm.push(w); put(s3, w); });
-  [[5, -7.1], [8, -7.1]].forEach(([x, z]) => { const w = box(2.6, H2 - 0.9, 0.02, mWarm, x, yUp, z - 0.1, s3.g); warm.push(w); put(s3, w); });
-  // 4. cobertura, deck, piscina e píer
-  const s4 = addStage();
-  put(s4, box(23, 0.22, 10.5, mSlab, 1, 0.95 + H1 + H2 + 0.42, -11, s4.g));
-  put(s4, box(23.2, 0.06, 0.06, mGold, 1, 0.95 + H1 + H2 + 0.54, -5.76, s4.g));
-  put(s4, box(26, 0.25, 7, mDeck, 0, 0.62, -3.5, s4.g));
-  for (let i = 0; i < 26; i++) put(s4, box(0.02, 0.26, 7, mWoodDark, -12.5 + i, 0.63, -3.5, s4.g));
-  put(s4, box(10, 0.28, 3.6, mPool, -5, 0.64, -3.4, s4.g));
-  put(s4, box(10.4, 0.3, 0.2, mConcrete, -5, 0.66, -5.3, s4.g));
-  // píer
-  const pierLen = 26;
-  put(s4, box(2.6, 0.22, pierLen, mDeck, 8, 0.75, 0 + pierLen / 2 + 1, s4.g));
-  for (let i = 0; i <= 8; i++) {
-    put(s4, cyl(0.16, 2.6, mWoodDark, 6.8, -0.6, 1.5 + i * (pierLen / 8), s4.g, 8));
-    put(s4, cyl(0.16, 2.6, mWoodDark, 9.2, -0.6, 1.5 + i * (pierLen / 8), s4.g, 8));
+  const s1 = addStage(); // fundação
+  put(s1, box(20, 0.5, 11, mConcrete, 0, Y0 + 0.25, -12, s1.g));
+  for (let i = 0; i < 7; i++) put(s1, box(0.5, 0.5, 0.5, mConcrete, -9 + i * 3, Y0 + 0.25, -6.2, s1.g));
+
+  const s2 = addStage(); // estrutura
+  [[-9.4, -17], [-9.4, -7.2], [0, -17], [0, -7.2], [9.4, -17], [9.4, -7.2]].forEach(([x, z]) => put(s2, box(0.3, H1, 0.3, mWhite, x, Y1 + H1 / 2, z, s2.g)));
+  put(s2, box(22, 0.35, 11.6, mWhite, 1, Y1 + H1 + 0.17, -11.5, s2.g));
+  [[-9.4, -15.4], [11.4, -15.4], [11.4, -7.2]].forEach(([x, z]) => put(s2, box(0.25, H2, 0.25, mWhite, x, Y2 + H2 / 2, z, s2.g)));
+  put(s2, box(23.4, 0.32, 10.6, mWhite, 1.2, Y2 + H2 + 0.16, -11, s2.g));
+
+  const s3 = addStage(); // fechamentos
+  put(s3, box(18.6, H1 - 0.05, 0.05, mGlass, 0, Y1 + H1 / 2, -7.1, s3.g));
+  for (let i = 0; i < 9; i++) put(s3, box(0.05, H1, 0.08, mFrame, -9.3 + i * 2.32, Y1 + H1 / 2, -7.08, s3.g));
+  put(s3, box(0.3, H1, 9.8, mConcrete, -9.4, Y1 + H1 / 2, -12.1, s3.g));
+  put(s3, box(19, H1, 0.3, mConcrete, 0, Y1 + H1 / 2, -17.1, s3.g));
+  put(s3, box(18, H1 - 0.3, 0.05, mInner, 0, Y1 + H1 / 2, -12.5, s3.g));
+  put(s3, box(4, 0.7, 1.6, mFabric, -4, Y1 + 0.35, -9.5, s3.g));
+  put(s3, box(3.2, 0.95, 1.1, mWhite, 4.5, Y1 + 0.47, -10.2, s3.g));
+  const yUp = Y2 + H2 / 2;
+  for (let i = 0; i < 44; i++) put(s3, box(0.09, H2 - 0.15, 0.2, mWood, -9.4 + i * 0.32, yUp, -5.85, s3.g));
+  put(s3, box(8, H2 - 0.15, 0.05, mGlass, 7.6, yUp, -5.9, s3.g));
+  put(s3, box(0.3, H2, 9.4, mWood, 11.5, yUp, -10.6, s3.g));
+  put(s3, box(21, H2, 0.3, mConcrete, 1, yUp, -15.4, s3.g));
+  put(s3, box(21, H2 - 0.3, 0.05, mInner, 1, yUp, -14.9, s3.g));
+  put(s3, box(23.4, 1.0, 0.05, mGlass, 1.2, Y2 + 0.5, -5.72, s3.g));
+
+  const s4 = addStage(); // cobertura, deck, piscina e píer
+  put(s4, box(24.4, 0.22, 11.6, mWhite, 1.2, Y2 + H2 + 0.43, -11, s4.g));
+  put(s4, box(24.5, 0.05, 0.05, mGold, 1.2, Y2 + H2 + 0.55, -5.2, s4.g));
+  put(s4, box(27, 0.18, 7.2, mDeck, 0, Y0 + 0.09, -3.2, s4.g));
+  put(s4, box(11, 0.2, 3.8, mPool, -5.2, Y0 + 0.12, -3.2, s4.g));
+  put(s4, box(11.4, 0.24, 0.25, mConcrete, -5.2, Y0 + 0.14, -5.2, s4.g));
+  const PL = 30, PX = 8.5;
+  put(s4, box(2.4, 0.16, PL, mDeck, PX, 1.15, 1 + PL / 2, s4.g));
+  for (let i = 0; i <= 10; i++) {
+    put(s4, cyl(0.13, 3.2, mWoodDark, PX - 1.1, -0.3, 1.6 + i * (PL / 10), s4.g, 8));
+    put(s4, cyl(0.13, 3.2, mWoodDark, PX + 1.1, -0.3, 1.6 + i * (PL / 10), s4.g, 8));
   }
-  put(s4, box(7, 0.22, 4, mDeck, 8, 0.75, pierLen + 3, s4.g));
-  for (let i = 0; i < 2; i++) put(s4, box(0.08, 1, pierLen, mWoodDark, 6.75 + i * 2.5, 1.35, pierLen / 2 + 1, s4.g));
-  // escada do píer
-  for (let i = 0; i < 4; i++) put(s4, box(1.4, 0.12, 0.4, mDeck, 11.6, 0.55 - i * 0.35, pierLen + 3 + i * 0.4, s4.g));
-  // 5. acabamento: espreguiçadeiras, luminárias, barco
-  const s5 = addStage();
-  [[-8, -0.9], [-5, -0.9], [-2, -0.9]].forEach(([x, z]) => { put(s5, box(0.8, 0.3, 2, M(0xf5f2ea), x, 0.95, z, s5.g)); put(s5, box(0.8, 0.5, 0.4, M(0xf5f2ea), x, 1.15, z - 0.9, s5.g)); });
-  const lamps = [];
-  for (let i = 0; i < 7; i++) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6), mWarm); l.position.set(i % 2 ? 9.15 : 6.85, 1.0, 3 + i * 3.6); s5.g.add(l); lamps.push(l); put(s5, l); }
-  const boat = new THREE.Group(); s5.g.add(boat);
-  const hull = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.8, 7), M(0xf6f6f6, { roughness: 0.4 })); hull.position.y = 0; hull.castShadow = true; boat.add(hull);
-  const cab = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.8, 2.4), M(0x1c2a44, { roughness: 0.3 })); cab.position.set(0, 0.75, 0.4); boat.add(cab);
-  boat.position.set(12.5, -0.2, pierLen - 4); put(s5, boat);
+  put(s4, box(7.5, 0.16, 4.5, mDeck, PX, 1.15, PL + 3, s4.g));
+  for (let i = 0; i < 2; i++) put(s4, box(0.05, 0.05, PL, mFrame, PX - 1.15 + i * 2.3, 2.05, 1 + PL / 2, s4.g));
+  for (let i = 0; i <= 15; i++) for (let k = 0; k < 2; k++) put(s4, box(0.05, 0.9, 0.05, mFrame, PX - 1.15 + k * 2.3, 1.6, 1 + i * 2, s4.g));
 
-  // estado inicial das etapas
-  stages.forEach((st) => st.items.forEach((m) => { m.visible = false; }));
+  const s5 = addStage(); // acabamento
+  [-8.6, -6.2, -3.8].forEach((x) => { put(s5, box(0.75, 0.28, 2.1, mFabric, x, Y0 + 0.4, -0.6, s5.g)); put(s5, box(0.75, 0.45, 0.35, mFabric, x, Y0 + 0.62, -1.55, s5.g)); });
+  put(s5, cyl(1.2, 0.08, std(0xf6f2e8, 0.9), 2.5, Y0 + 2.2, -1.2, s5.g, 24));
+  put(s5, cyl(0.04, 2.1, mFrame, 2.5, Y0 + 1.1, -1.2, s5.g, 6));
+  for (let i = 0; i < 8; i++) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 8), mInner); l.position.set(i % 2 ? PX + 1.15 : PX - 1.15, 2.15, 3 + i * 3.6); s5.g.add(l); put(s5, l); }
+  const boat = new THREE.Group(); s5.g.add(boat);
+  const hs = new THREE.Shape(); hs.moveTo(-1.2, -3.6); hs.lineTo(1.2, -3.6); hs.lineTo(1.2, 2.2); hs.quadraticCurveTo(0.9, 3.8, 0, 4.4); hs.quadraticCurveTo(-0.9, 3.8, -1.2, 2.2); hs.lineTo(-1.2, -3.6);
+  const hull = new THREE.Mesh(new THREE.ExtrudeGeometry(hs, { depth: 0.9, bevelEnabled: true, bevelSize: 0.15, bevelThickness: 0.15, bevelSegments: 3 }), std(0xf7f7f5, 0.3, 0.05));
+  hull.rotation.x = -Math.PI / 2; hull.castShadow = true; boat.add(hull);
+  const cabin = new THREE.Mesh(new THREE.BoxGeometry(1.8, 0.7, 2.2), mGlass); cabin.position.set(0, 1.25, -0.2); boat.add(cabin);
+  const roof = new THREE.Mesh(new THREE.BoxGeometry(2, 0.08, 2.6), std(0xf7f7f5, 0.3)); roof.position.set(0, 1.65, -0.1); boat.add(roof);
+  boat.position.set(PX + 3.4, 0.05, PL - 6); put(s5, boat);
+
+  // luzes noturnas
+  const poolLight = new THREE.PointLight(0x5fd2ff, 0, 12); poolLight.position.set(-5.2, Y0 + 0.4, -3.2); scene.add(poolLight);
+  const inLight1 = new THREE.PointLight(0xffb45c, 0, 18); inLight1.position.set(-2, Y1 + 2, -9); scene.add(inLight1);
+  const inLight2 = new THREE.PointLight(0xffb45c, 0, 18); inLight2.position.set(4, Y2 + 1.8, -8.5); scene.add(inLight2);
+
+  stages.forEach((st) => st.items.forEach((m) => (m.visible = false)));
 
   // ---------- rolagem → progresso ----------
   let target = 0, prog = 0;
-  function readScroll() {
-    const r = stage.getBoundingClientRect();
-    const total = r.height - innerHeight;
-    target = Math.min(1, Math.max(0, -r.top / Math.max(1, total)));
-  }
+  function readScroll() { const r = stage.getBoundingClientRect(); target = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - innerHeight))); }
+  function resize() { const w = holder.clientWidth, h = holder.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.fov = w < h ? 46 : 30; camera.updateProjectionMatrix(); }
   addEventListener("scroll", readScroll, { passive: true });
   addEventListener("resize", () => { resize(); readScroll(); });
-  function resize() {
-    const w = holder.clientWidth, h = holder.clientHeight;
-    renderer.setSize(w, h, false); camera.aspect = w / h;
-    camera.fov = w < h ? 48 : 34; camera.updateProjectionMatrix();
-  }
   resize(); readScroll();
 
-  // legendas por etapa
   const caps = [...document.querySelectorAll("#obra [data-etapa]")];
   const bar = document.getElementById("obraBarra");
-  const ease = (t) => (t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t));
-  const N = stages.length;
-
+  const ease = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t * t * (3 - 2 * t));
+  const N = stages.length, span = 1 / (N + 1);
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  let last = performance.now(), running = true;
-  const io = new IntersectionObserver((es) => es.forEach((e) => { running = e.isIntersecting; if (running) { last = performance.now(); requestAnimationFrame(loop); } }), { threshold: 0 });
-  io.observe(holder);
 
+  let last = performance.now(), running = true;
+  new IntersectionObserver((es) => es.forEach((e) => { const was = running; running = e.isIntersecting; if (running && !was) { last = performance.now(); requestAnimationFrame(loop); } })).observe(holder);
+
+  const look = new THREE.Vector3();
   function loop(now) {
     if (!running) return;
     const dt = Math.min(50, now - last); last = now;
-    prog += (target - prog) * (reduce ? 1 : Math.min(1, dt * 0.004));
+    prog += (target - prog) * (reduce ? 1 : Math.min(1, dt * 0.0035));
     const t = now / 1000;
-    // etapas: cada uma ocupa 1/(N+1) do percurso; a última fração é o "acender das luzes"
-    const span = 1 / (N + 1);
+
     stages.forEach((st, si) => {
       const k = ease((prog - si * span * 0.92) / (span * 0.9));
+      const n = st.items.length;
       st.items.forEach((m, i) => {
-        const kk = ease(k * 1.4 - (i / Math.max(1, st.items.length)) * 0.4);
-        m.visible = kk > 0.001;
-        if (!m.visible) return;
-        const f = m.userData.final;
-        m.position.set(f.x, f.y + (1 - kk) * 6, f.z);
-        const sf = m.userData.scaleFinal; m.scale.set(sf.x, sf.y * Math.max(0.001, kk), sf.z);
+        const kk = ease(k * 1.5 - (i / Math.max(1, n)) * 0.5);
+        m.visible = kk > 0.001; if (!m.visible) return;
+        const f = m.userData.final, sf = m.userData.scaleFinal;
+        m.position.set(f.x, f.y + (1 - kk) * 4, f.z);
+        m.scale.set(sf.x, sf.y * Math.max(0.001, kk), sf.z);
       });
     });
+
+    // fim de tarde dourado → crepúsculo na entrega
     const night = ease((prog - N * span * 0.92) / (span * 0.9));
-    scene.background.copy(SKY_DAY).lerp(SKY_NIGHT, night);
-    scene.fog.color.copy(scene.background);
-    sun.intensity = 1.25 - night * 0.95; hemi.intensity = 0.55 - night * 0.3;
-    mWarm.emissiveIntensity = 0.15 + night * 2.2;
-    mPool.emissiveIntensity = 0.35 + night * 0.9;
-    // mar
-    const p = seaGeo.attributes.position.array;
-    for (let i = 0; i < p.length; i += 3) { const x = seaBase[i], z = seaBase[i + 2]; p[i + 1] = Math.sin(x * 0.12 + t * 0.9) * 0.18 + Math.cos(z * 0.1 + t * 0.7) * 0.16; }
-    seaGeo.attributes.position.needsUpdate = true; seaGeo.computeVertexNormals();
-    boat.rotation.z = Math.sin(t * 0.9) * 0.03; boat.position.y = -0.2 + Math.sin(t * 1.1) * 0.06;
-    // câmera em órbita lenta guiada pela rolagem
-    const ang = -0.9 + prog * 1.5 + Math.sin(t * 0.1) * 0.03;
-    const rad = (innerWidth < innerHeight ? 64 : 52) - prog * 8;
-    const camY = 26 - prog * 14;
-    camera.position.set(Math.sin(ang) * rad, camY, Math.cos(ang) * rad + 2);
-    camera.lookAt(0, 2.2 - prog * 0.6, -4 + prog * 2);
-    // legendas
+    const elev = 9 - night * 11.5;
+    setSun(elev, 228);
+    sun.position.copy(sunDir).multiplyScalar(120).add(sun.target.position);
+    sun.intensity = Math.max(0, 2.2 * Math.min(1, (elev + 1) / 6));
+    hemi.intensity = 0.35 - night * 0.18;
+    scene.fog.color.setRGB(0.49 - night * 0.43, 0.54 - night * 0.47, 0.63 - night * 0.52);
+    renderer.toneMappingExposure = 0.8 + night * 0.2;
+    mInner.emissiveIntensity = 0.05 + night * 2.4;
+    mPool.emissiveIntensity = 0.25 + night * 1.6;
+    poolLight.intensity = night * 2.2; inLight1.intensity = night * 1.6; inLight2.intensity = night * 1.4;
+
+    water.material.uniforms.time.value = t * 0.45;
+    boat.rotation.z = Math.sin(t * 0.8) * 0.025; boat.rotation.x = Math.sin(t * 0.6) * 0.012; boat.position.y = 0.05 + Math.sin(t * 1.1) * 0.05;
+    palms.forEach((p, i) => { p.rotation.z = Math.sin(t * 0.7 + i) * 0.03; p.rotation.x = Math.cos(t * 0.5 + i) * 0.02; });
+
+    // câmera de cinema: drone alto que desce e circula a casa
+    const ang = -1.05 + prog * 1.55 + Math.sin(t * 0.08) * 0.02;
+    const rad = (innerWidth < innerHeight ? 78 : 64) - prog * 12;
+    camera.position.set(Math.sin(ang) * rad, 15 - prog * 8 + Math.sin(t * 0.3) * 0.15, Math.cos(ang) * rad + 4);
+    look.set(1, 6 - prog * 2.5, -8 + prog * 3);
+    camera.lookAt(look);
+
     const idx = Math.min(caps.length - 1, Math.floor(prog * caps.length * 0.999));
     caps.forEach((c, i) => c.classList.toggle("on", i === idx));
     if (bar) bar.style.transform = `scaleX(${prog})`;
