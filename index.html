@@ -160,6 +160,27 @@
     .concierge li i{font-family:var(--serif);color:var(--gold);font-style:italic;font-size:18px;min-width:22px}
     .concierge .note{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-top:18px}
 
+
+    .planos-lead{color:var(--muted);font-size:16px;max-width:52ch;margin:26px 0 0}
+    .como{display:grid;grid-template-columns:repeat(4,1fr);gap:34px;margin:70px 0 80px;padding-top:34px;border-top:1px solid var(--hair)}
+    @media (max-width:860px){.como{grid-template-columns:1fr 1fr}}
+    @media (max-width:520px){.como{grid-template-columns:1fr}}
+    .como span{font-family:var(--serif);font-style:italic;color:var(--gold);font-size:22px}
+    .como h3{font-family:var(--serif);font-weight:400;font-size:26px;margin:6px 0 8px}
+    .como p{margin:0;color:var(--muted);font-size:14px}
+    .planos{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+    @media (max-width:960px){.planos{grid-template-columns:1fr}}
+    .plano{border:1px solid var(--hair);border-radius:28px;padding:40px 34px 36px;display:flex;flex-direction:column;background:linear-gradient(180deg,rgba(255,255,255,.025),transparent);transition:border-color .6s var(--ease),transform .8s var(--ease)}
+    .plano:hover{border-color:var(--line);transform:translateY(-4px)}
+    .plano.destaque{border-color:var(--line);background:radial-gradient(120% 80% at 100% 0%,rgba(241,199,106,.12),transparent 60%),#0c1630}
+    .plano .pn{width:46px;height:46px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--serif);font-style:italic;color:var(--gold);font-size:18px}
+    .plano h3{font-family:var(--serif);font-weight:400;font-size:38px;margin:22px 0 6px;line-height:1}
+    .plano .pd{color:var(--muted);font-size:14px;margin:0 0 22px;min-height:44px}
+    .plano ul{list-style:none;padding:0;margin:0 0 30px;flex:1}
+    .plano li{padding:12px 0;border-top:1px solid var(--hair);font-size:14px;color:var(--text);display:flex;gap:12px}
+    .plano li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold);margin-top:9px;flex:none}
+    .plano .pill{align-self:flex-start}
+    .planos-nota{text-align:center;color:var(--soft);font-size:12px;letter-spacing:.2em;text-transform:uppercase;margin-top:40px}
     .costa{text-align:center}
     .costa .rota{display:flex;justify-content:center;flex-wrap:wrap;gap:14px 34px;margin-top:40px;font-family:var(--serif);font-size:clamp(24px,3vw,38px);font-weight:300}
     .costa .rota span{display:flex;align-items:center;gap:34px}
@@ -225,7 +246,7 @@
       <nav aria-label="Menu">
         <a href="#experiencia">Experiência</a>
         <a href="#fazemos">Obras</a>
-        <a href="#concierge">Concierge</a>
+        <a href="#planos">Planos</a>
         <a class="pill small" href="#convite"><span class="dot"></span>Visita privada</a>
       </nav>
     </div>
@@ -289,23 +310,58 @@
       </div>
     </section>
 
-    <section class="s" id="concierge" style="padding-top:0">
+    <section class="s" id="planos" style="padding-top:0">
       <div class="wrap">
-        <div class="concierge rv">
-          <div>
-            <div class="eyebrow">Concierge de manutenção</div>
-            <h2 class="titulo" style="font-size:clamp(34px,4.4vw,60px)">Sua casa cuidada, <em>mesmo de longe.</em></h2>
-          </div>
-          <div>
-            <ul>
-              <li><i>i</i>Um único contato para tudo o que a casa precisar</li>
-              <li><i>ii</i>Profissional certo, materiais e traslado organizados</li>
-              <li><i>iii</i>Prestação de contas de cada atendimento</li>
-            </ul>
-            <a class="pill js-plan" href="#convite" data-servico="Concierge de manutenção"><span class="dot"></span>Conhecer o concierge</a>
-            <div class="note">Para casas de temporada, pousadas e condomínios · sob consulta</div>
-          </div>
+        <div class="eyebrow rv">Planos de manutenção mensal</div>
+        <h2 class="titulo rv d1">Sua casa cuidada, <em>mesmo de longe.</em></h2>
+        <p class="planos-lead rv d2">Para casas de temporada, pousadas e condomínios. Uma equipe fixa que conhece o seu imóvel, visitas programadas e um único contato para tudo o que ele precisar.</p>
+
+        <div class="como rv">
+          <div><span>01</span><h3>Conversa</h3><p>Entendemos o imóvel, o uso e o que mais preocupa você.</p></div>
+          <div><span>02</span><h3>Vistoria inicial</h3><p>Percorremos a casa e registramos o estado de cada item.</p></div>
+          <div><span>03</span><h3>Plano sob medida</h3><p>Escopo, frequência das visitas e tempo de resposta por escrito.</p></div>
+          <div><span>04</span><h3>Rotina e relatório</h3><p>Visitas programadas e relatório com fotos após cada atendimento.</p></div>
         </div>
+
+        <div class="planos">
+          <article class="plano rv">
+            <div class="pn">I</div>
+            <h3>Essencial</h3>
+            <p class="pd">Para manter a casa em ordem entre uma temporada e outra.</p>
+            <ul>
+              <li>Visita programada de vistoria</li>
+              <li>Pequenos reparos de manutenção</li>
+              <li>Checagem de telhado, calhas e áreas molhadas</li>
+              <li>Relatório com fotos</li>
+            </ul>
+            <a class="pill small js-plan" href="#convite" data-servico="Plano mensal Essencial"><span class="dot"></span>Entrar em contato</a>
+          </article>
+          <article class="plano destaque rv d1">
+            <div class="pn">II</div>
+            <h3>Completo</h3>
+            <p class="pd">Para quem tem deck, píer, piscina ou recebe hóspedes com frequência.</p>
+            <ul>
+              <li>Tudo do Essencial</li>
+              <li>Cuidado preventivo de decks e píeres</li>
+              <li>Impermeabilização preventiva</li>
+              <li>Agenda de manutenção ao longo do ano</li>
+            </ul>
+            <a class="pill small js-plan" href="#convite" data-servico="Plano mensal Completo"><span class="dot"></span>Entrar em contato</a>
+          </article>
+          <article class="plano rv d2">
+            <div class="pn">III</div>
+            <h3>Exclusivo</h3>
+            <p class="pd">Para pousadas, condomínios e casas que não podem parar.</p>
+            <ul>
+              <li>Tudo do Completo</li>
+              <li>Atendimento prioritário</li>
+              <li>Responsável dedicado ao imóvel</li>
+              <li>Planejamento de melhorias e reformas</li>
+            </ul>
+            <a class="pill small js-plan" href="#convite" data-servico="Plano mensal Exclusivo"><span class="dot"></span>Entrar em contato</a>
+          </article>
+        </div>
+        <p class="planos-nota rv">Valores sob consulta, definidos após a vistoria inicial conforme o tamanho e o uso do imóvel.</p>
       </div>
     </section>
 
@@ -313,7 +369,7 @@
       <div class="wrap">
         <div class="eyebrow rv">Onde estamos</div>
         <div class="rota rv d1"><span>Ubatuba</span><span>Paraty</span><span>Ilha Grande</span><span>Angra dos Reis</span><span>Mangaratiba</span></div>
-        <p class="rv d2">Base em Angra dos Reis. Materiais e equipe chegam onde a sua casa estiver — inclusive nas ilhas.</p>
+        <p class="rv d2">Base em Angra dos Reis. Atendemos a Costa Verde do continente às ilhas.</p>
       </div>
     </section>
 
@@ -334,7 +390,7 @@
             <div class="campo"><input id="fTel" name="telefone" type="tel" placeholder=" " required minlength="10" pattern="[0-9()+\s.\-]{10,20}" title="WhatsApp com DDD" inputmode="tel" autocomplete="tel"><label for="fTel">WhatsApp</label></div>
             <div class="campo"><select id="fCidade" name="cidade" required><option value=""></option><option>Angra dos Reis</option><option>Ilha Grande</option><option>Paraty</option><option>Mangaratiba</option><option>Ubatuba</option><option>Outra</option></select><label for="fCidade">Cidade</label></div>
           </div>
-          <div class="campo"><select id="servico" name="servico" required><option value=""></option><option>Construção</option><option>Reforma</option><option>Decks e píeres</option><option>Impermeabilização</option><option>Coberturas</option><option>Acabamentos</option><option>Concierge de manutenção</option><option>Outro</option></select><label for="servico">Interesse</label></div>
+          <div class="campo"><select id="servico" name="servico" required><option value=""></option><option>Construção</option><option>Reforma</option><option>Decks e píeres</option><option>Impermeabilização</option><option>Coberturas</option><option>Acabamentos</option><option>Plano mensal Essencial</option><option>Plano mensal Completo</option><option>Plano mensal Exclusivo</option><option>Outro</option></select><label for="servico">Interesse</label></div>
           <div class="campo"><textarea id="fMsg" name="mensagem" placeholder=" " required></textarea><label for="fMsg">Sobre o projeto</label></div>
           <div class="campo"><input id="fEmail" name="email" type="email" placeholder=" " autocomplete="email"><label for="fEmail">E-mail (opcional)</label></div>
           <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" aria-hidden="true">
