@@ -123,16 +123,22 @@
   const dm = new THREE.Object3D(), tc = new THREE.Color();
   const N_TREES = small ? 260 : 900;
   const cGeo = new THREE.SphereGeometry(1, small ? 8 : 12, small ? 6 : 9); { const q = cGeo.attributes.position; for (let i = 0; i < q.count; i++) { const v = new THREE.Vector3().fromBufferAttribute(q, i); v.multiplyScalar(0.8 + 0.35 * Math.abs(Math.sin(v.x * 5 + v.y * 3) * Math.cos(v.z * 4))); q.setXYZ(i, v.x, v.y, v.z); } cGeo.computeVertexNormals(); }
-  const canopy = new THREE.InstancedMesh(cGeo, std(0xffffff, 1, 0, { envMapIntensity: 0.3 }), N_TREES);
+  const canopy = new THREE.InstancedMesh(cGeo, std(0xffffff, 1, 0, { envMapIntensity: 0.3 }), N_TREES * 3);
   canopy.castShadow = true; canopy.receiveShadow = true;
   for (let i = 0; i < N_TREES; i++) {
     let x, z, tries = 0;
     do { x = (rnd() - 0.5) * 128; z = -18 + (rnd() - 0.5) * 108; tries++; } while ((height(x, z) < 1.8 || z > -27 && Math.abs(x) < 34) && tries < 60);
     const ok = height(x, z) >= 1.8 && !(z > -27 && Math.abs(x) < 34);
     const s = ok ? 0.9 + rnd() * 1.5 : 0.0001;
-    dm.position.set(x, height(x, z) + s * 0.6, z); dm.scale.set(s, s * (0.7 + rnd() * 0.4), s); dm.rotation.set(rnd(), rnd() * 6, rnd());
-    dm.updateMatrix(); canopy.setMatrixAt(i, dm.matrix);
-    tc.setHSL(0.26 + rnd() * 0.07, 0.28 + rnd() * 0.15, 0.05 + rnd() * 0.05); canopy.setColorAt(i, tc);
+    // cada árvore = 3 volumes de copa agrupados (mata atlântica mais natural)
+    const hue = 0.26 + rnd() * 0.07, sat = 0.3 + rnd() * 0.15, lig = 0.06 + rnd() * 0.05;
+    for (let k = 0; k < 3; k++) {
+      const sk = s * (0.55 + rnd() * 0.35);
+      dm.position.set(x + (rnd() - 0.5) * s * 1.3, height(x, z) + s * (0.5 + k * 0.28), z + (rnd() - 0.5) * s * 1.3);
+      dm.scale.set(sk, sk * (0.75 + rnd() * 0.3), sk); dm.rotation.set(rnd(), rnd() * 6, rnd());
+      dm.updateMatrix(); canopy.setMatrixAt(i * 3 + k, dm.matrix);
+      tc.setHSL(hue + (rnd() - 0.5) * 0.02, sat, lig * (0.85 + k * 0.15)); canopy.setColorAt(i * 3 + k, tc);
+    }
   }
   scene.add(canopy);
 
@@ -301,6 +307,53 @@
   const inLight1 = new THREE.PointLight(0xffb45c, 0, 18); inLight1.position.set(-2, Y1 + 2, -9); scene.add(inLight1);
   const inLight2 = new THREE.PointLight(0xffb45c, 0, 18); inLight2.position.set(4, Y2 + 1.8, -8.5); scene.add(inLight2);
 
+  // ---------- itens reais (referência: render aprovado) ----------
+  const mLed = new THREE.MeshStandardMaterial({ color: 0xffd9a0, emissive: 0xffbe72, emissiveIntensity: 0.8 });
+  // fitas de LED sob a laje do 2º piso e sob o beiral da cobertura
+  put(s5, box(22.4, 0.035, 0.05, mLed, 1, Y1 + H1 - 0.03, -5.72, s5.g));
+  put(s5, box(24, 0.035, 0.05, mLed, 1.2, Y2 + H2 + 0.3, -5.25, s5.g));
+  // jardim tropical (touceiras de folhas) ao redor da casa e no gramado
+  const mBush = std(0xffffff, 0.85, 0, { side: THREE.DoubleSide, envMapIntensity: 0.4 });
+  const bushSpots = [];
+  for (let i = 0; i < 26; i++) bushSpots.push([-15 + i * 1.2, -18.6 + rnd() * 0.8]);             // fundo
+  for (let i = 0; i < 12; i++) { bushSpots.push([-13.9 - rnd() * 1.4, -16 + i * 1.3]); bushSpots.push([13.9 + rnd() * 1.4, -16 + i * 1.3]); } // laterais
+  for (let i = 0; i < 18; i++) bushSpots.push([-30 + rnd() * 15, -8 + rnd() * 10]);            // gramado oeste
+  for (let i = 0; i < 18; i++) bushSpots.push([15 + rnd() * 15, -12 + rnd() * 12]);            // gramado leste
+  const FR = 7, bush = new THREE.InstancedMesh(frondGeo, mBush, bushSpots.length * FR);
+  bush.castShadow = true; bush.receiveShadow = true;
+  bushSpots.forEach(([x, z], i) => {
+    const sc = 0.28 + rnd() * 0.22, h = height(x, z);
+    for (let k = 0; k < FR; k++) {
+      dm.position.set(x, h + 0.05, z); dm.rotation.set(0, (k / FR) * Math.PI * 2 + rnd(), 0); dm.scale.set(sc, sc * (0.8 + rnd() * 0.5), sc);
+      dm.updateMatrix(); bush.setMatrixAt(i * FR + k, dm.matrix);
+      tc.setHSL(0.25 + rnd() * 0.06, 0.45 + rnd() * 0.2, 0.16 + rnd() * 0.1); bush.setColorAt(i * FR + k, tc);
+    }
+  });
+  scene.add(bush);
+  // vasos com plantas (sala, terraço e deck)
+  function vaso(x, y, z, sc, st) {
+    const g = new THREE.Group(); g.position.set(x, y, z);
+    const pot = new THREE.Mesh(new THREE.CylinderGeometry(0.28 * sc, 0.22 * sc, 0.55 * sc, 18), std(0xece7dd, 0.6)); pot.position.y = 0.27 * sc; pot.castShadow = true; g.add(pot);
+    for (let k = 0; k < 8; k++) { const f = new THREE.Mesh(frondGeo, mLeaf); f.scale.setScalar(0.22 * sc); f.position.y = 0.5 * sc; f.rotation.y = k * 0.8 + rnd() * 0.3; f.castShadow = true; g.add(f); }
+    (st ? st.g : scene).add(g); if (st) put(st, g); return g;
+  }
+  vaso(-7.6, Y1, -8.0, 1.6, s5); vaso(6.8, Y1, -8.3, 1.4, s5); vaso(9.6, Y2, -6.6, 1.8, s5); vaso(-12.3, Y0 + 0.18, -0.9, 1.6, s5); vaso(11.9, Y0 + 0.18, -1.2, 1.5, s5);
+  // sala: mesa redonda, quadro na parede e ilha da cozinha iluminada
+  put(s5, cyl(0.95, 0.05, std(0xf3efe8, 0.4), 1.6, Y1 + 0.76, -9.4, s5.g, 32));
+  put(s5, cyl(0.06, 0.74, mFrame, 1.6, Y1 + 0.37, -9.4, s5.g, 10));
+  put(s5, box(1.5, 1.05, 0.04, std(0xc8a27a, 0.8), -4.2, Y1 + 2.0, -12.42, s5.g));
+  put(s5, box(1.0, 0.7, 0.03, std(0x8a6a4f, 0.8), 4.5, Y1 + 2.1, -12.42, s5.g));
+  // balizadores de luz no deck e no píer
+  const bollards = [];
+  for (let i = 0; i < 6; i++) bollards.push([-12 + i * 3.6, Y0 + 0.18, 4.45]);
+  for (let i = 0; i < 9; i++) bollards.push([PX + (i % 2 ? 1.05 : -1.05), 1.23, 2 + i * 3.4]);
+  bollards.forEach(([x, y, z]) => { put(s5, cyl(0.05, 0.55, mFrame, x, y + 0.27, z, s5.g, 8)); put(s5, cyl(0.065, 0.08, mLed, x, y + 0.58, z, s5.g, 10)); });
+  // luzes de destaque nas palmeiras e na fachada (refletores no chão)
+  const upl = [];
+  // luz quente interna (sala, cozinha, 2º piso e beiral)
+  const warmIn = [[-6, Y1 + 2.6, -9.5], [0, Y1 + 2.6, -9.5], [6, Y1 + 2.6, -9.5], [-3, Y2 + 2.4, -9], [5, Y2 + 2.4, -8.5], [-8, Y0 + 1.2, 2.5], [2, Y0 + 1.2, 2.5]].map(([x, y, z]) => { const L = new THREE.PointLight(0xffb866, 0, 11, 2); L.position.set(x, y, z); scene.add(L); return L; });
+  palms.forEach((p, i) => { const g = p.parent; const w = new THREE.Vector3(); g.getWorldPosition(w); const disc = cyl(0.12, 0.05, mLed, w.x + 0.35, w.y + 0.03, w.z + 0.35, s5.g, 12); put(s5, disc);
+    if (!small && i < 4) { const L = new THREE.PointLight(0xffc27a, 0, 9, 2); L.position.set(w.x + 0.4, w.y + 1.2, w.z + 0.4); scene.add(L); upl.push(L); } });
   stages.forEach((st) => st.items.forEach((m) => (m.visible = false)));
 
   // mobiliário real em glTF (sofá e cadeiras)
@@ -358,14 +411,18 @@
     setSun(elev, 228);
     sun.position.copy(sunDir).multiplyScalar(120).add(sun.target.position);
     sun.intensity = Math.max(0, 2.2 * Math.min(1, (elev + 1) / 6));
-    hemi.intensity = 0.35 - night * 0.29;
+    hemi.intensity = 0.35 - night * 0.24;
     const envK = (hdrReady ? 0.55 : 1) * (1 - night * 0.94);
     if (!stdMats) { stdMats = new Set(); scene.traverse((o) => { const m = o.material; if (m && m.isMeshStandardMaterial) { if (m.userData.env0 === undefined) m.userData.env0 = m.envMapIntensity; stdMats.add(m); } }); }
     if (envK !== lastEnvK) { lastEnvK = envK; stdMats.forEach((m) => (m.envMapIntensity = m.userData.env0 * envK)); }
     scene.fog.color.setRGB(0.49 - night * 0.43, 0.54 - night * 0.47, 0.63 - night * 0.52);
-    renderer.toneMappingExposure = 0.8 - night * 0.3;
+    renderer.toneMappingExposure = 0.8 - night * 0.08;
     mInner.emissiveIntensity = 0.05 + night * 5;
     mPool.emissiveIntensity = 0.25 + night * 1.6;
+    mLed.emissiveIntensity = 0.9 + night * 4.5;
+    upl.forEach((L) => (L.intensity = 0.15 + night * 2.2));
+    warmIn.forEach((L) => (L.intensity = night * 2.4));
+    mGlass.opacity = 0.62 - night * 0.42;
     poolLight.intensity = night * 2.5; inLight1.intensity = night * 2.2; inLight2.intensity = night * 2;
 
     water.material.uniforms.time.value = t * 0.45;
@@ -377,9 +434,8 @@
     const rad = (innerWidth < innerHeight ? 78 : 64) - prog * 12;
     camera.position.set(Math.sin(ang) * rad, 15 - prog * 8 + Math.sin(t * 0.3) * 0.15, Math.cos(ang) * rad + 4);
     look.set(1, 6 - prog * 2.5, -8 + prog * 3);
-    // no fim da obra a câmera chega ao mesmo ângulo do render fotográfico (vista frontal, vinda do mar)
-    const close = ease((prog - 0.48) / 0.24);
-    if (close > 0) { camera.position.lerp(closePos.set(1.5, 8, 52), close); look.lerp(closeLook.set(1.5, 4.6, -9), close); }
+    const close = ease((prog - 0.68) / 0.32) * 0.8;
+    if (close > 0) { camera.position.lerp(closePos.set(-3 + Math.sin(t * 0.15) * 0.3, 4.4, 15), close); look.lerp(closeLook.set(-1.5, 2.4, -8.5), close); }
     camera.lookAt(look);
 
     const idx = Math.min(caps.length - 1, Math.floor(prog * caps.length * 0.999));
