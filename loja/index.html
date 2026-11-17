@@ -71,6 +71,17 @@
     .prod:hover{border-color:var(--line);transform:translateY(-4px)}
     .ilu{aspect-ratio:4/3;display:grid;place-items:center;border-bottom:1px solid var(--hair);background:radial-gradient(60% 60% at 50% 55%,rgba(241,199,106,.10),transparent 70%)}
     .ilu svg{width:56%;height:auto}
+    .ilu{position:relative;overflow:hidden}
+    .ilu img{position:absolute;inset:8% 10%;width:80%;height:84%;backface-visibility:visible;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
+    .foto svg{visibility:hidden}
+    /* produto em 3D: gira no próprio eixo, flutua e inclina com o dedo/mouse */
+    .ilu{perspective:900px}
+    .ilu .giro{position:absolute;inset:0;display:grid;grid-template-columns:100%;place-items:center;transform-style:preserve-3d;animation:gira 8s ease-in-out infinite}
+    .ilu .giro > *{transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s var(--ease)}
+    .ilu::after{content:"";position:absolute;left:28%;right:28%;bottom:7%;height:14px;border-radius:50%;background:radial-gradient(closest-side,rgba(0,0,0,.55),transparent);animation:sombra 8s ease-in-out infinite;pointer-events:none}
+    @keyframes gira{0%,100%{transform:rotateY(-28deg) translateY(0)}50%{transform:rotateY(28deg) translateY(-10px)}}
+    @keyframes sombra{0%,100%{transform:scaleX(1);opacity:.9}50%{transform:scaleX(.82);opacity:.6}}
+    @media (prefers-reduced-motion:reduce){.ilu .giro,.ilu::after{animation:none}}
     .info{padding:26px 26px 28px;display:flex;flex-direction:column;flex:1}
     .cat{font-size:10px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:500}
     .prod h3{font-family:var(--serif);font-weight:400;font-size:28px;line-height:1.15;margin:10px 0 6px}
@@ -152,7 +163,10 @@
         <div class="grade">
           <article class="prod rv">
             <div class="ilu" aria-hidden="true">
+              <div class="giro">
               <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><path d="M30 46 80 26l50 20v58l-50 20-50-20Z"/><path d="M30 46l50 20 50-20M80 66v58"/><path d="M44 74l24 10M44 84l24 10" opacity=".5"/><path d="M92 82l22-9" opacity=".5"/></svg>
+              <img src="https://www.viapol.com.br/media/vqvnpxx1/produto_viaplus-7000-fibras.png" alt="Viaplus 7000 (imagem do fabricante)" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('foto')" onerror="this.remove()">
+              </div>
             </div>
             <div class="info">
               <div class="cat">Argamassa polimérica flexível</div>
@@ -168,7 +182,10 @@
 
           <article class="prod rv">
             <div class="ilu" aria-hidden="true">
+              <div class="giro">
               <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><ellipse cx="80" cy="34" rx="40" ry="10"/><path d="M40 34v74c0 6 18 10 40 10s40-4 40-10V34"/><path d="M40 52c0 6 18 10 40 10s40-4 40-10" opacity=".5"/><path d="M62 20c0-6 8-8 18-8s18 2 18 8" /></svg>
+              <img src="https://www.viapol.com.br/media/bjvl0wu4/produto_viabit.png" alt="Viabit (imagem do fabricante)" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('foto')" onerror="this.remove()">
+              </div>
             </div>
             <div class="info">
               <div class="cat">Pintura asfáltica</div>
@@ -184,7 +201,9 @@
 
           <article class="prod rv">
             <div class="ilu" aria-hidden="true">
+              <div class="giro">
               <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><ellipse cx="46" cy="70" rx="14" ry="34"/><ellipse cx="46" cy="70" rx="5" ry="12" opacity=".6"/><path d="M46 36h70l-10 22 10 12-10 12 10 22H46"/><path d="M70 36v68M90 36v68M54 54h56M54 86h56" opacity=".35"/></svg>
+              </div>
             </div>
             <div class="info">
               <div class="cat">Reforço de impermeabilização</div>
@@ -238,7 +257,7 @@
       <div><h4>Retirada</h4><p>R. Manoel da Silva Oliveira, 80 – Galpão</p><p>Camorim Pequeno · Angra dos Reis · RJ</p><p>CEP 23912-060</p></div>
       <div><h4>Contato</h4><p><a class="js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pela Loja do site.">(24) 99929-7179</a></p><p><a href="mailto:groupconstrutora333@gmail.com">groupconstrutora333@gmail.com</a></p><p><a href="/">Voltar ao site</a></p></div>
     </div>
-    <div class="wrap aviso">Preços válidos enquanto durar o estoque e sujeitos a alteração. Frete calculado pelo WhatsApp conforme o endereço. Marcas citadas pertencem aos seus fabricantes; as ilustrações são representativas. © <span id="ano"></span> Group Construtora</div>
+    <div class="wrap aviso">Preços válidos enquanto durar o estoque e sujeitos a alteração. Frete calculado pelo WhatsApp conforme o endereço. Marcas citadas pertencem aos seus fabricantes; imagens dos produtos: divulgação dos fabricantes. © <span id="ano"></span> Group Construtora</div>
   </footer>
 
   <a class="wa js-wa" href="#" target="_blank" rel="noopener" aria-label="Pedir pelo WhatsApp" data-msg="Olá! Vim pela Loja do site e gostaria de fazer um pedido.">
@@ -250,6 +269,11 @@
     document.querySelectorAll(".js-wa").forEach(a => {
       a.href = "https://wa.me/" + WA + "?text=" + encodeURIComponent(a.dataset.msg || "Olá! Vim pela Loja do site.");
       a.addEventListener("click", () => { if (window.gtag) gtag("event", "contact", { event_category: "loja", event_label: a.dataset.msg || "" }); });
+    });
+    document.querySelectorAll(".ilu").forEach(el => {
+      const set = (x, y) => { el.style.setProperty("--ry", x + "deg"); el.style.setProperty("--rx", y + "deg"); };
+      el.addEventListener("pointermove", e => { const r = el.getBoundingClientRect(); set(((e.clientX - r.left) / r.width - .5) * 40, -((e.clientY - r.top) / r.height - .5) * 24); });
+      el.addEventListener("pointerleave", () => set(0, 0));
     });
     document.getElementById("ano").textContent = new Date().getFullYear();
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
