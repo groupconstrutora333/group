@@ -377,8 +377,9 @@
     const rad = (innerWidth < innerHeight ? 78 : 64) - prog * 12;
     camera.position.set(Math.sin(ang) * rad, 15 - prog * 8 + Math.sin(t * 0.3) * 0.15, Math.cos(ang) * rad + 4);
     look.set(1, 6 - prog * 2.5, -8 + prog * 3);
-    const close = ease((prog - 0.68) / 0.32) * 0.8;
-    if (close > 0) { camera.position.lerp(closePos.set(-3 + Math.sin(t * 0.15) * 0.3, 4.4, 15), close); look.lerp(closeLook.set(-1.5, 2.4, -8.5), close); }
+    // no fim da obra a câmera chega ao mesmo ângulo do render fotográfico (vista frontal, vinda do mar)
+    const close = ease((prog - 0.48) / 0.24);
+    if (close > 0) { camera.position.lerp(closePos.set(1.5, 8, 52), close); look.lerp(closeLook.set(1.5, 4.6, -9), close); }
     camera.lookAt(look);
 
     const idx = Math.min(caps.length - 1, Math.floor(prog * caps.length * 0.999));
