@@ -87,7 +87,7 @@
     .top nav{display:flex;gap:28px;align-items:center}
     .top nav a{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);transition:color .3s}
     .top nav a:hover{color:var(--gold)}
-    @media (max-width:860px){.top nav a:not(.pill){display:none}}
+    @media (max-width:860px){.top nav{gap:16px}.top .pill.small{white-space:nowrap;padding:9px 13px;letter-spacing:.12em;font-size:10px}.top .wrap{gap:12px}.top nav a:not(.pill):not(.m){display:none}}
 
     .pill{display:inline-flex;align-items:center;gap:12px;padding:15px 28px;border-radius:999px;border:1px solid var(--gold);color:var(--gold);font-size:12px;letter-spacing:.24em;text-transform:uppercase;font-weight:500;background:transparent;cursor:pointer;font-family:var(--sans);transition:background .5s var(--ease),color .5s var(--ease)}
     .pill:hover{background:var(--gold);color:var(--bg)}
@@ -249,7 +249,7 @@
         <a href="#experiencia">Experiência</a>
         <a href="#fazemos">Serviços</a>
         <a href="#planos">Planos</a>
-        <a href="/loja/">Loja</a>
+        <a class="m" href="/loja/">Loja</a>
         <a class="pill small" href="#convite"><span class="dot"></span>Visita privada</a>
       </nav>
     </div>
