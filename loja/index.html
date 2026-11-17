@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>Loja Group — Produtos de impermeabilização · Angra dos Reis e Costa Verde</title>
-  <meta name="description" content="Loja Group Construtora: impermeabilizantes, pinturas asfálticas e telas de reforço, os mesmos materiais que usamos nas nossas obras. Pedido pelo WhatsApp, retirada em Angra dos Reis ou entrega na Costa Verde." />
+  <meta name="description" content="Loja Group Construtora: impermeabilizantes, mantas, fitas, primers, telas e madeira sob encomenda, os mesmos materiais que usamos nas nossas obras. Pedido pelo WhatsApp, retirada em Angra dos Reis ou entrega na Costa Verde." />
   <meta name="theme-color" content="#0a1226" />
   <link rel="canonical" href="https://groupconstrutora.com.br/loja/" />
   <link rel="icon" href="/assets/logo-256.png" />
@@ -91,6 +91,7 @@
     .uso li{font-size:11px;letter-spacing:.06em;color:var(--muted);border:1px solid var(--hair);border-radius:999px;padding:5px 12px}
     .prod .pill{margin-top:auto;width:100%}
     .preco{font-family:var(--serif);font-size:38px;font-weight:400;color:var(--gold);line-height:1;margin:0 0 4px}
+    .preco.sob{font-size:28px}
     .frete{font-size:12px;color:var(--soft);margin:0 0 20px}
     .consulta{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);text-align:center;margin:12px 0 0}
 
@@ -115,6 +116,29 @@
     footer p{margin:0 0 6px}
     footer a:hover{color:var(--gold)}
     .aviso{margin-top:40px;font-size:12px;line-height:1.6}
+
+    .abas{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding-bottom:34px}
+    .abas a{border:1px solid var(--line);border-radius:999px;padding:11px 22px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);transition:background .4s,color .4s}
+    .abas a:hover{background:var(--gold);color:var(--bg)}
+    .madeira{background:linear-gradient(180deg,rgba(241,199,106,.05),transparent 60%);border-top:1px solid var(--hair)}
+    .mad-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:start}
+    @media (max-width:900px){.mad-grid{grid-template-columns:1fr;gap:36px}}
+    .mad-txt p{color:var(--muted);margin:0 0 18px}
+    .mad-txt .selo{display:inline-block;border:1px solid var(--gold);color:var(--gold);border-radius:4px;padding:14px 18px;font-family:var(--serif);font-size:22px;line-height:1.3;margin:6px 0 24px}
+    .especies{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 22px;padding:0;list-style:none}
+    .especies li{border:1px solid var(--hair);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
+    .form-mad{border:1px solid var(--hair);border-radius:4px;padding:28px;background:rgba(255,255,255,.02)}
+    .form-mad label{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin:0 0 8px}
+    .form-mad select,.form-mad input,.form-mad textarea{width:100%;background:transparent;border:0;border-bottom:1px solid var(--hair);color:var(--text);font:300 16px var(--sans);padding:8px 0 12px;margin:0 0 22px;outline:none;border-radius:0}
+    .form-mad select option{color:#0a1226}
+    .form-mad textarea{min-height:96px;resize:vertical}
+    .form-mad input:focus,.form-mad textarea:focus,.form-mad select:focus{border-bottom-color:var(--gold)}
+    .bts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media (max-width:520px){.bts{grid-template-columns:1fr}}
+    .bts .pill{width:100%}
+    .pill.cheio{background:var(--gold);color:var(--bg)}
+    .pill.cheio:hover{background:transparent;color:var(--gold)}
+    .nota{font-size:12px;color:var(--soft);margin:14px 0 0}
     .wa{position:fixed;right:22px;bottom:22px;z-index:50;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;background:rgba(7,10,20,.7);border:1px solid var(--line);color:var(--gold);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:background .4s,color .4s}
     .wa:hover{background:var(--gold);color:var(--bg)}
     .wa svg{width:24px;height:24px}
@@ -131,6 +155,7 @@
         <a href="/#fazemos">Serviços</a>
         <a href="/#planos">Planos</a>
         <a class="m" href="/loja/" aria-current="page">Loja</a>
+        <a href="/loja/#madeira">Madeira</a>
         <a class="pill small js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pela Loja do site e gostaria de fazer um pedido."><span class="dot"></span>Pedir</a>
       </nav>
     </div>
@@ -145,6 +170,8 @@
       </div>
     </div>
 
+
+    <nav class="abas wrap" aria-label="Seções da Loja"><a href="#produtos">Impermeabilização</a><a href="#madeira">Madeira sob encomenda</a></nav>
     <div class="faixa">
       <ul class="wrap">
         <li><b>Pedido pelo WhatsApp</b>atendimento direto</li>
@@ -216,7 +243,104 @@
               <p class="consulta">Pagamento por Pix</p>
             </div>
           </article>
+          <article class="prod rv">
+            <div class="ilu" aria-hidden="true">
+              <div class="giro">
+              <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><ellipse cx="46" cy="70" rx="14" ry="34"/><ellipse cx="46" cy="70" rx="5" ry="12" opacity=".6"/><path d="M46 36h70v68H46"/><path d="M60 52h50M60 70h50M60 88h50" opacity=".35"/></svg>
+              </div>
+            </div>
+            <div class="info">
+              <div class="cat">Estruturante</div>
+              <h3>Véu de poliéster</h3>
+              <p class="emb">Rolo VP 50 · 50 m²</p>
+              <p class="d">Véu leve que reforça membranas asfálticas e acrílicas em lajes, calhas e coberturas.</p>
+              <ul class="uso"><li>Lajes</li><li>Calhas</li><li>Coberturas</li></ul>
+              <p class="preco">R$ 330</p><p class="frete">+ frete · retirada grátis em Angra</p>
+              <a class="pill js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pela Loja do site e quero comprar o véu de poliéster VP 50 (50 m²) por R$ 330. Qual o frete para o meu endereço?"><span class="dot"></span>Comprar pelo WhatsApp</a>
+              <p class="consulta">Pagamento por Pix</p>
+            </div>
+          </article>
+          <article class="prod rv">
+            <div class="ilu" aria-hidden="true">
+              <div class="giro">
+              <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><path d="M48 40h64v70c0 6-14 10-32 10s-32-4-32-10Z"/><ellipse cx="80" cy="40" rx="32" ry="8"/><path d="M60 30c0-8 40-8 40 0" /></svg>
+              <img src="https://www.viapol.com.br/media/obcn0ze0/produto_ecoprimer.png" alt="Ecoprimer (imagem do fabricante)" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add('foto')" onerror="this.remove()">
+              </div>
+            </div>
+            <div class="info">
+              <div class="cat">Primer asfáltico</div>
+              <h3>Ecoprimer</h3>
+              <p class="emb">Base água · Viapol</p>
+              <p class="d">Imprimação à base de água para preparar a superfície antes de mantas e fitas asfálticas. Menos odor, aplicação a frio.</p>
+              <ul class="uso"><li>Mantas</li><li>Fitas</li><li>Lajes</li></ul>
+              <p class="preco sob">Sob consulta</p><p class="frete">valor do dia pelo WhatsApp</p>
+              <a class="pill js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pela Loja do site e gostaria do valor do Ecoprimer (primer asfáltico base água)."><span class="dot"></span>Consultar valor</a>
+              <p class="consulta">Pagamento por Pix</p>
+            </div>
+          </article>
+          <article class="prod rv">
+            <div class="ilu" aria-hidden="true">
+              <div class="giro">
+              <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><circle cx="80" cy="70" r="40"/><circle cx="80" cy="70" r="16" opacity=".6"/><path d="M120 70h26v14h-26" /></svg>
+              </div>
+            </div>
+            <div class="info">
+              <div class="cat">Fita asfáltica</div>
+              <h3>Fita aluminizada</h3>
+              <p class="emb">Autoadesiva · rolos de 10 m · várias larguras</p>
+              <p class="d">Fita de asfalto modificado com filme de alumínio para vedar rufos, telhados, calhas e emendas expostas ao sol.</p>
+              <ul class="uso"><li>Rufos</li><li>Telhados</li><li>Calhas</li></ul>
+              <p class="preco sob">Sob consulta</p><p class="frete">valor do dia pelo WhatsApp</p>
+              <a class="pill js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pela Loja do site e gostaria do valor da fita asfáltica aluminizada. Largura que preciso: "><span class="dot"></span>Consultar valor</a>
+              <p class="consulta">Pagamento por Pix</p>
+            </div>
+          </article>
+          <article class="prod rv">
+            <div class="ilu" aria-hidden="true">
+              <div class="giro">
+              <svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><ellipse cx="46" cy="70" rx="14" ry="34"/><ellipse cx="46" cy="70" rx="5" ry="12" opacity=".6"/><path d="M46 36h70v68H46"/><path d="M60 52h50M60 70h50M60 88h50" opacity=".35"/></svg>
+              </div>
+            </div>
+            <div class="info">
+              <div class="cat">Impermeabilização</div>
+              <h3>Manta asfáltica</h3>
+              <p class="emb">Rolos de 1 × 10 m · 3 e 4 mm</p>
+              <p class="d">Manta para lajes, terraços, jardineiras e baldrames, aplicada com maçarico sobre primer.</p>
+              <ul class="uso"><li>Lajes</li><li>Terraços</li><li>Jardineiras</li></ul>
+              <p class="preco sob">Sob consulta</p><p class="frete">valor do dia pelo WhatsApp</p>
+              <a class="pill js-wa" href="#" target="_blank" rel="noopener" data-msg="Olá! Vim pela Loja do site e gostaria do valor da manta asfáltica. Espessura e quantidade: "><span class="dot"></span>Consultar valor</a>
+              <p class="consulta">Pagamento por Pix</p>
+            </div>
+          </article>
         </div>
+      </div>
+    </section>
+
+    <section class="madeira" id="madeira">
+      <div class="wrap mad-grid">
+        <div class="mad-txt rv">
+          <div class="eyebrow">Madeira sob encomenda</div>
+          <div class="tit" style="margin-bottom:22px"><h2>A madeira da sua obra, no preço que você já tem.</h2></div>
+          <p>Vendemos a madeira solicitada para a sua obra, nas espécies, bitolas e quantidades do seu projeto, e entregamos em Angra e na Costa Verde.</p>
+          <div class="selo">Recebeu outro orçamento?<br>Mande para nós: cobrimos sempre que possível.</div>
+          <ul class="especies"><li>Ipê</li><li>Cumaru</li><li>Jatobá</li><li>Garapa</li><li>Cambará</li><li>Angelim</li><li>Eucalipto tratado</li><li>Pinus tratado</li></ul>
+          <p>Decks, pergolados, vigas, caibros, ripas, tábuas, pranchas e acabamentos. Se a peça não estiver na lista, peça mesmo assim.</p>
+        </div>
+        <form class="form-mad rv" id="formMadeira" novalidate>
+          <label for="mEsp">Espécie</label>
+          <select id="mEsp"><option>Ipê</option><option>Cumaru</option><option>Jatobá</option><option>Garapa</option><option>Cambará</option><option>Angelim</option><option>Eucalipto tratado</option><option>Pinus tratado</option><option>Outra / não sei</option></select>
+          <label for="mLista">Peças, medidas e quantidades</label>
+          <textarea id="mLista" placeholder="Ex.: 40 tábuas de deck 10 x 2 cm x 3 m; 6 vigas 6 x 16 cm x 4 m"></textarea>
+          <label for="mOrc">Orçamento que você recebeu (opcional)</label>
+          <input id="mOrc" placeholder="Valor e loja, ex.: R$ 8.500 na madeireira X">
+          <label for="mLocal">Local de entrega</label>
+          <input id="mLocal" placeholder="Bairro e cidade">
+          <div class="bts">
+            <button type="button" class="pill cheio" data-acao="comprar"><span class="dot"></span>Comprar</button>
+            <button type="button" class="pill" data-acao="negociar"><span class="dot"></span>Negociar orçamento</button>
+          </div>
+          <p class="nota">O pedido abre no WhatsApp. Lá você pode anexar a foto do projeto ou do orçamento que recebeu.</p>
+        </form>
       </div>
     </section>
 
@@ -234,7 +358,7 @@
     <section class="breve">
       <div class="wrap">
         <div class="tit rv"><div><div class="eyebrow">Em breve</div><h2>Mais linhas a caminho</h2></div><p>Precisa de algo que ainda não está aqui? Pergunte: provavelmente conseguimos para você.</p></div>
-        <div class="lista rv"><span>Mantas asfálticas</span><span>Primers</span><span>Selantes</span><span>Véu de poliéster</span><span>Telhas</span><span>Ferramentas de aplicação</span></div>
+        <div class="lista rv"><span>Tintas</span><span>Selantes</span><span>Telhas</span><span>Ferramentas de aplicação</span></div>
       </div>
     </section>
 
@@ -275,6 +399,16 @@
       el.addEventListener("pointermove", e => { const r = el.getBoundingClientRect(); set(((e.clientX - r.left) / r.width - .5) * 40, -((e.clientY - r.top) / r.height - .5) * 24); });
       el.addEventListener("pointerleave", () => set(0, 0));
     });
+    document.querySelectorAll("#formMadeira [data-acao]").forEach(b => b.addEventListener("click", () => {
+      const v = id => (document.getElementById(id).value || "").trim();
+      const neg = b.dataset.acao === "negociar";
+      const linhas = [neg ? "Olá! Vim pela Loja do site e quero NEGOCIAR um orçamento de madeira." : "Olá! Vim pela Loja do site e quero COMPRAR madeira.",
+        "Espécie: " + v("mEsp"), "Peças/medidas: " + (v("mLista") || "(vou enviar)"),
+        v("mOrc") ? "Orçamento que recebi: " + v("mOrc") : (neg ? "Orçamento que recebi: (vou enviar a foto)" : ""),
+        "Entrega: " + (v("mLocal") || "(a combinar)")].filter(Boolean);
+      if (window.gtag) gtag("event", "contact", { event_category: "madeira", event_label: b.dataset.acao });
+      window.open("https://wa.me/" + WA + "?text=" + encodeURIComponent(linhas.join("\n")), "_blank", "noopener");
+    }));
     document.getElementById("ano").textContent = new Date().getFullYear();
     const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
     document.querySelectorAll(".rv").forEach(el => io.observe(el));

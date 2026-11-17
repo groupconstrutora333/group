@@ -11,7 +11,7 @@
   catch (e) { return fail(); }
 
   const small = Math.min(innerWidth, innerHeight) < 700;
-  renderer.setPixelRatio(Math.min(small ? 1.25 : 2, devicePixelRatio || 1));
+  renderer.setPixelRatio(Math.min(small ? 1.5 : 2, devicePixelRatio || 1));
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.8;
@@ -334,10 +334,11 @@
   new IntersectionObserver((es) => es.forEach((e) => { const was = running; running = e.isIntersecting; if (running && !was) { last = performance.now(); requestAnimationFrame(loop); } })).observe(holder);
 
   const look = new THREE.Vector3(), closePos = new THREE.Vector3(), closeLook = new THREE.Vector3();
+  const camSmooth = new THREE.Vector3(), lookSmooth = new THREE.Vector3(); let camReady = false;
   function loop(now) {
     if (!running) return;
     const dt = Math.min(50, now - last); last = now;
-    prog += (target - prog) * (reduce ? 1 : Math.min(1, dt * 0.0035));
+    prog += (target - prog) * (reduce ? 1 : 1 - Math.exp(-dt * 0.0042)); // segue a rolagem com amortecimento uniforme
     const t = now / 1000;
 
     stages.forEach((st, si) => {
@@ -347,8 +348,9 @@
         const kk = ease(k * 1.5 - (i / Math.max(1, n)) * 0.5);
         m.visible = kk > 0.001; if (!m.visible) return;
         const f = m.userData.final, sf = m.userData.scaleFinal;
-        m.position.set(f.x, f.y + (1 - kk) * 4, f.z);
-        m.scale.set(sf.x, sf.y * Math.max(0.001, kk), sf.z);
+        const up = 1 - kk, land = 1 - up * up * up; // pousa suave (ease-out cúbico)
+        m.position.set(f.x, f.y + up * up * 3.2, f.z);
+        m.scale.set(sf.x, sf.y * Math.max(0.001, land), sf.z);
       });
     });
 
@@ -379,7 +381,9 @@
     look.set(1, 6 - prog * 2.5, -8 + prog * 3);
     const close = ease((prog - 0.68) / 0.32) * 0.8;
     if (close > 0) { camera.position.lerp(closePos.set(-3 + Math.sin(t * 0.15) * 0.3, 4.4, 15), close); look.lerp(closeLook.set(-1.5, 2.4, -8.5), close); }
-    camera.lookAt(look);
+    if (!camReady || reduce) { camSmooth.copy(camera.position); lookSmooth.copy(look); camReady = true; }
+    else { const a = 1 - Math.exp(-dt * 0.006); camSmooth.lerp(camera.position, a); lookSmooth.lerp(look, a); }
+    camera.position.copy(camSmooth); camera.lookAt(lookSmooth);
 
     const idx = Math.min(caps.length - 1, Math.floor(prog * caps.length * 0.999));
     caps.forEach((c, i) => c.classList.toggle("on", i === idx));
