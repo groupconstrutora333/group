@@ -71,6 +71,7 @@
     .prod:hover{border-color:var(--line);transform:translateY(-4px)}
     .ilu{aspect-ratio:4/3;display:grid;place-items:center;border-bottom:1px solid var(--hair);background:radial-gradient(60% 60% at 50% 55%,rgba(241,199,106,.10),transparent 70%)}
     .ilu svg{width:56%;height:auto}
+    .ilu svg.pk{width:64%;height:auto;max-height:88%;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
     .ilu{position:relative;overflow:hidden}
     .ilu img{position:absolute;inset:8% 10%;width:80%;height:84%;backface-visibility:visible;object-fit:contain;filter:drop-shadow(0 18px 30px rgba(0,0,0,.45))}
     .foto svg{visibility:hidden}
@@ -296,42 +297,63 @@
       fita:'<svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><circle cx="80" cy="70" r="40"/><circle cx="80" cy="70" r="16" opacity=".6"/><path d="M120 70h26v14h-26"/></svg>',
       ralo:'<svg viewBox="0 0 160 140" fill="none" stroke="#f1c76a" stroke-width="1.6" stroke-linejoin="round"><path d="M30 60h100l-14 30H44Z"/><circle cx="80" cy="74" r="10"/><path d="M80 90v30" /><path d="M72 70h16M72 78h16" opacity=".5"/></svg>'
     };
-    const VIAPOL = "https://www.viapol.com.br/media/";
+
+    /* embalagem 3D desenhada (para produtos sem foto do fabricante) */
+    let gid=0;
+    function rotulo(nome){const w=nome.replace(/^Viapol /,"").split(" ");const a=[];let l="";w.forEach(x=>{if((l+" "+x).trim().length>11&&l){a.push(l);l=x}else l=(l+" "+x).trim()});a.push(l);return a.slice(0,2)}
+    function PACK(ic,nome){
+      const g="g"+(++gid), r=rotulo(nome), alu=/alum|vedatudo|v[eé]u/i.test(nome), ard=/ard[oó]sia/i.test(nome);
+      const t=(x,y,fs,cor)=>r.map((l,i)=>'<text x="'+x+'" y="'+(y+i*fs*1.15)+'" font-size="'+fs+'" fill="'+cor+'" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" letter-spacing=".4">'+esc(l.toUpperCase())+'</text>').join("");
+      const defs='<defs><linearGradient id="'+g+'c" x1="0" x2="1"><stop offset="0" stop-color="#111"/><stop offset=".35" stop-color="#3a3a3a"/><stop offset=".6" stop-color="#1a1a1a"/><stop offset="1" stop-color="#050505"/></linearGradient><linearGradient id="'+g+'s" x1="0" x2="1"><stop offset="0" stop-color="#8d939b"/><stop offset=".35" stop-color="#f2f4f6"/><stop offset=".65" stop-color="#b9bec5"/><stop offset="1" stop-color="#6c7178"/></linearGradient><linearGradient id="'+g+'w" x1="0" x2="1"><stop offset="0" stop-color="#b8bcc2"/><stop offset=".4" stop-color="#ffffff"/><stop offset="1" stop-color="#9da2a9"/></linearGradient><linearGradient id="'+g+'o" x1="0" x2="1"><stop offset="0" stop-color="#b8862e"/><stop offset=".45" stop-color="#ffe39a"/><stop offset="1" stop-color="#a67722"/></linearGradient><linearGradient id="'+g+'k" x1="0" x2="1"><stop offset="0" stop-color="#9c7a4c"/><stop offset=".45" stop-color="#e3c592"/><stop offset="1" stop-color="#8a6a3e"/></linearGradient></defs>';
+      const o='<svg class="pk" viewBox="14 0 132 140" xmlns="http://www.w3.org/2000/svg">'+defs;
+      if(ic==="manta"){const f=alu?"url(#"+g+"s)":ard?"#5d6168":"url(#"+g+"c)";
+        return o+'<path d="M28 104 132 104 148 120 44 120Z" fill="'+(alu?"#c9cdd3":"#222")+'" opacity=".9"/><rect x="40" y="30" width="80" height="80" rx="4" fill="'+f+'"/><ellipse cx="40" cy="70" rx="12" ry="40" fill="'+(alu?"#d7dbe0":"#2b2b2b")+'"/><ellipse cx="40" cy="70" rx="5" ry="16" fill="#0a0a0a"/><path d="M44 34c8 12 8 60 0 72" stroke="#000" stroke-opacity=".35" fill="none"/><rect x="52" y="52" width="62" height="36" rx="2" fill="url(#'+g+'o)"/>'+t(83,r.length>1?66:74,9,"#0a1226")+'</svg>'}
+      if(ic==="balde"){
+        return o+'<ellipse cx="80" cy="116" rx="44" ry="8" fill="#000" opacity=".35"/><path d="M38 30h84l-6 82c0 5-16 8-36 8s-36-3-36-8Z" fill="url(#'+g+'w)"/><ellipse cx="80" cy="30" rx="42" ry="9" fill="#e9ecef"/><ellipse cx="80" cy="30" rx="36" ry="6" fill="#cfd3d8"/><path d="M40 44h80" stroke="#9aa0a7"/><path d="M42 54h76l-3 40H45Z" fill="url(#'+g+'o)"/>'+t(80,r.length>1?70:78,10,"#0a1226")+'<path d="M38 30c0-22 84-22 84 0" fill="none" stroke="#c7ccd2" stroke-width="2.5"/></svg>'}
+      if(ic==="tubo"){
+        return o+'<ellipse cx="80" cy="124" rx="26" ry="5" fill="#000" opacity=".35"/><path d="M76 4h8l3 18H73Z" fill="#d9dde2"/><rect x="62" y="20" width="36" height="102" rx="6" fill="url(#'+g+'s)"/><rect x="62" y="46" width="36" height="52" fill="url(#'+g+'o)"/><g transform="rotate(-90 80 72)">'+t(80,r.length>1?70:75,9,"#0a1226")+'</g></svg>'}
+      if(ic==="pote"){
+        return o+'<ellipse cx="80" cy="118" rx="40" ry="7" fill="#000" opacity=".35"/><path d="M48 44h64v66c0 4-14 7-32 7s-32-3-32-7Z" fill="url(#'+g+'w)"/><ellipse cx="80" cy="44" rx="32" ry="8" fill="#7d838a"/><path d="M48 40v-8c0-4 14-7 32-7s32 3 32 7v8c0 4-14 7-32 7s-32-3-32-7Z" fill="url(#'+g+'c)"/><path d="M50 62h60v34H50Z" fill="url(#'+g+'o)"/>'+t(80,r.length>1?76:83,9,"#0a1226")+'</svg>'}
+      if(ic==="saco"){
+        return o+'<ellipse cx="80" cy="124" rx="44" ry="6" fill="#000" opacity=".35"/><path d="M44 18h72l6 10-4 88c-12 6-64 6-76 0l-4-88Z" fill="url(#'+g+'k)"/><path d="M44 18h72l-4 8H48Z" fill="#6f5530" opacity=".5"/><rect x="52" y="48" width="56" height="40" rx="2" fill="#0a1226"/>'+t(80,r.length>1?65:72,9,"#f1c76a")+'</svg>'}
+      return SVG[ic];
+    }
+    const IMG = "img/";
     const P = [
       ["mantas","manta","Viapol Torodin","Manta asfáltica tipo III · 3 ou 4 mm","Manta asfáltica de alto desempenho para lajes, terraços e áreas expostas a grande movimentação."],
       ["mantas","manta","Viapol Classic","Manta asfáltica tipo II · 3 ou 4 mm","Manta asfáltica com estruturante de poliéster para lajes, terraços e jardineiras."],
       ["mantas","manta","Viapol Classic Alumínio","Manta asfáltica tipo II · 3 mm","Acabamento em alumínio para áreas expostas ao sol, sem necessidade de proteção mecânica."],
-      ["mantas","manta","Drykomanta Top","Manta asfáltica tipo III · 3 ou 4 mm","Manta de poliéster para impermeabilização de lajes, terraços e reservatórios."],
-      ["mantas","manta","Drykomanta Poliallum","Manta asfáltica tipo III · 3 ou 4 mm","Manta de poliéster com acabamento aluminizado para coberturas expostas."],
-      ["mantas","manta","Drykomanta Vedatudo","Manta com acabamento em alumínio","Para vedação e reparos em telhados, calhas, rufos e coberturas."],
+      ["mantas","manta","Drykomanta Top","Manta asfáltica tipo III · 3 ou 4 mm","Manta de poliéster para impermeabilização de lajes, terraços e reservatórios.","drykomanta-top.webp"],
+      ["mantas","manta","Drykomanta Poliallum","Manta asfáltica tipo III · 3 ou 4 mm","Manta de poliéster com acabamento aluminizado para coberturas expostas.","drykomanta-poliallum.webp"],
+      ["mantas","manta","Drykomanta Vedatudo","Manta com acabamento em alumínio","Para vedação e reparos em telhados, calhas, rufos e coberturas.","drykomanta-vedatudo.webp"],
       ["mantas","manta","Premium Ardósia Poliéster","Manta asfáltica · 3 ou 4 mm · cor cinza","Acabamento ardosiado, para coberturas aparentes com melhor estética."],
-      ["cimenticios","caixa","Viaplus 1000","Revestimento cimentício","Impermeabilizante cimentício resistente à pressão de água, para cisternas e subsolos."],
-      ["cimenticios","caixa","Viaplus 5000","Revestimento impermeabilizante","Revestimento flexível para áreas molhadas, banheiros, cozinhas e sacadas."],
-      ["cimenticios","caixa","Viaplus 7000","Caixa com 18 kg","Revestimento flexível de alto desempenho para caixas d'água, cisternas e piscinas.","vqvnpxx1/produto_viaplus-7000-fibras.png"],
-      ["cimenticios","caixa","Viaplus 10000","Cimento elástico","Impermeabilizante de alta elasticidade para áreas com movimentação e fissuras."],
-      ["cimenticios","caixa","Viaplus Protec RS","Revestimento cimentício","Proteção de estruturas de saneamento, como reservatórios e estações de tratamento."],
-      ["cimenticios","saco","Eucorepair Vi60","Saco com 25 kg","Argamassa monocomponente para reparos estruturais em concreto."],
-      ["cimenticios","balde","Pó 2 Instantâneo","Tamponamento","Estanca jorros e infiltrações de água de pega instantânea."],
-      ["asfalticos","balde","Viabit","Lata com 18 litros","Pintura asfáltica para fundações, baldrames e muros de arrimo.","bjvl0wu4/produto_viabit.png"],
+      ["cimenticios","caixa","Viaplus 1000","Revestimento cimentício","Impermeabilizante cimentício resistente à pressão de água, para cisternas e subsolos.","viaplus-1000.webp"],
+      ["cimenticios","caixa","Viaplus 5000","Revestimento impermeabilizante","Revestimento flexível para áreas molhadas, banheiros, cozinhas e sacadas.","viaplus-5000.webp"],
+      ["cimenticios","caixa","Viaplus 7000","Caixa com 18 kg","Revestimento flexível de alto desempenho para caixas d'água, cisternas e piscinas.","viaplus-7000.webp"],
+      ["cimenticios","caixa","Viaplus 10000","Cimento elástico","Impermeabilizante de alta elasticidade para áreas com movimentação e fissuras.","viaplus-10000.webp"],
+      ["cimenticios","caixa","Viaplus Protec RS","Revestimento cimentício","Proteção de estruturas de saneamento, como reservatórios e estações de tratamento.","viaplus-protec-rs.webp"],
+      ["cimenticios","saco","Eucorepair Vi60","Saco com 25 kg","Argamassa monocomponente para reparos estruturais em concreto.","eucorepair-vi60.webp"],
+      ["cimenticios","balde","Pó 2 Instantâneo","Tamponamento","Estanca jorros e infiltrações de água de pega instantânea.","po2.webp"],
+      ["asfalticos","balde","Viabit","Lata com 18 litros","Pintura asfáltica para fundações, baldrames e muros de arrimo.","viabit.webp"],
       ["asfalticos","balde","Viabit Acqua","Pintura asfáltica base água","Impermeabilização de fundações e estruturas em contato com o solo."],
-      ["asfalticos","balde","Ecoprimer","Balde com 18 litros","Imprimação base água para colagem de mantas asfálticas.","obcn0ze0/produto_ecoprimer.png"],
-      ["asfalticos","balde","Adeflex","Balde com 18 litros","Primer asfáltico para colagem de mantas e fitas."],
-      ["asfalticos","balde","Drykoprimer","Balde com 18 litros","Pintura asfáltica base água para colagem de mantas."],
-      ["asfalticos","balde","Drykoprimer Eco","Balde com 18 litros","Primer para aderência de mantas asfálticas."],
+      ["asfalticos","balde","Ecoprimer","Balde com 18 litros","Imprimação base água para colagem de mantas asfálticas.","ecoprimer.webp"],
+      ["asfalticos","balde","Adeflex","Balde com 18 litros","Primer asfáltico para colagem de mantas e fitas.","adeflex.webp"],
+      ["asfalticos","balde","Drykoprimer","Balde com 18 litros","Pintura asfáltica base água para colagem de mantas.","drykoprimer.webp"],
+      ["asfalticos","balde","Drykoprimer Eco","Balde com 18 litros","Primer para aderência de mantas asfálticas.","drykoprimer-eco.webp"],
       ["asfalticos","saco","Asfalto Modificado","Asfalto oxidado · pacote 25 kg","Para moldagem a quente e colagem de mantas."],
       ["selantes","tubo","Viapol Sela PU 30","Selante de poliuretano","Vedação de juntas em concreto, alvenaria e cerâmica."],
       ["selantes","balde","Heydcryl Mastique","Selante monocomponente","Selante flexível para juntas e trincas."],
       ["selantes","pote","Viapoxi Tix","Embalagem 1 kg","Epóxi para fixação de chumbadores, dormentes e ancoragens."],
-      ["selantes","pote","Viapoxi Adesivo","Embalagem 1 kg","Adesivo estrutural à base de resina epóxi."],
-      ["aditivos","balde","Viapol Contra Umidade","Balde com 18 litros","Aditivo mineral impermeabilizante para argamassa e concreto."],
-      ["aditivos","balde","Viafix","Balde com 18 litros","Adesivo para chapisco e argamassas."],
-      ["aditivos","balde","Viacal","Balde com 18 litros","Aditivo plastificante para argamassa."],
-      ["aditivos","balde","Desforma Plus","Balde com 18 litros","Desmoldante para formas de madeira e compensado."],
-      ["acessorios","manta","Tela de poliéster","Rolo 1 m × 50 m","Reforço para impermeabilização em cantos, ralos e trincas."],
+      ["selantes","pote","Viapoxi Adesivo","Embalagem 1 kg","Adesivo estrutural à base de resina epóxi.","viapoxi-adesivo.webp"],
+      ["aditivos","balde","Viapol Contra Umidade","Balde com 18 litros","Aditivo mineral impermeabilizante para argamassa e concreto.","contra-umidade.webp"],
+      ["aditivos","balde","Viafix","Balde com 18 litros","Adesivo para chapisco e argamassas.","viafix.webp"],
+      ["aditivos","balde","Viacal","Balde com 18 litros","Aditivo plastificante para argamassa.","viacal.webp"],
+      ["aditivos","balde","Desforma Plus","Balde com 18 litros","Desmoldante para formas de madeira e compensado.","desforma-plus.webp"],
+      ["acessorios","manta","Tela de poliéster","Rolo 1 m × 50 m","Reforço para impermeabilização em cantos, ralos e trincas.","tela-poliester.webp"],
       ["acessorios","manta","Véu de poliéster VP 50","Rolo de 50 m²","Estruturante para membranas asfálticas e acrílicas."],
-      ["acessorios","manta","Camada separadora","Rolo de 220 m","Separa a impermeabilização da proteção mecânica, evitando que as tensões se transmitam."],
-      ["acessorios","fita","Fita multiuso","Fita adesiva · várias cores","Vedação de emendas, rufos e calhas."],
-      ["acessorios","ralo","Viaboc Ralo","Ralo pré-fabricado","Peça pronta para arremate de ralos na impermeabilização."],
+      ["acessorios","manta","Camada separadora","Rolo de 220 m","Separa a impermeabilização da proteção mecânica, evitando que as tensões se transmitam.","camada-separadora.webp"],
+      ["acessorios","fita","Fita multiuso","Fita adesiva · várias cores","Vedação de emendas, rufos e calhas.","fita-multiuso.webp"],
+      ["acessorios","ralo","Viaboc Ralo","Ralo pré-fabricado","Peça pronta para arremate de ralos na impermeabilização.","viaboc-ralo.webp"],
       ["tintas","balde","Fuseprotec Parede","Tinta acrílica impermeabilizante","Protege paredes externas contra umidade e chuva."]
     ];
     const CAT = {todos:"Todos",mantas:"Mantas asfálticas",cimenticios:"Cimentícios",asfalticos:"Primers e asfálticos",selantes:"Selantes e epóxi",aditivos:"Aditivos",acessorios:"Acessórios",tintas:"Tintas"};
@@ -339,8 +361,8 @@
     const esc = t => t.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
     grade.innerHTML = P.map(([cat, ic, nome, emb, desc, img]) => {
       const msg = "Olá! Vim pela Loja do site e gostaria do valor de: " + nome + " (" + emb + ").";
-      const foto = img ? '<img src="' + VIAPOL + img + '" alt="' + esc(nome) + ' (imagem do fabricante)" loading="lazy" referrerpolicy="no-referrer" onload="this.parentNode.classList.add(\'foto\')" onerror="this.remove()">' : "";
-      return '<article class="prod in" data-cat="' + cat + '"><div class="ilu" aria-hidden="true"><div class="giro">' + SVG[ic] + foto + '</div></div><div class="info"><div class="cat">' + CAT[cat] + '</div><h3>' + esc(nome) + '</h3><p class="emb">' + esc(emb) + '</p><p class="d">' + esc(desc) + '</p><p class="preco sob">Sob consulta</p><p class="frete">valor do dia pelo WhatsApp</p><a class="pill js-wa" href="#" target="_blank" rel="noopener" data-msg="' + esc(msg) + '"><span class="dot"></span>Consultar valor</a></div></article>';
+      const foto = img ? '<img src="' + IMG + img + '" alt="' + esc(nome) + ' (imagem do fabricante)" loading="lazy" onload="this.parentNode.classList.add(\'foto\')" onerror="this.remove()">' : "";
+      return '<article class="prod in" data-cat="' + cat + '"><div class="ilu" aria-hidden="true"><div class="giro">' + (img ? SVG[ic] : PACK(ic, nome)) + foto + '</div></div><div class="info"><div class="cat">' + CAT[cat] + '</div><h3>' + esc(nome) + '</h3><p class="emb">' + esc(emb) + '</p><p class="d">' + esc(desc) + '</p><p class="preco sob">Sob consulta</p><p class="frete">valor do dia pelo WhatsApp</p><a class="pill js-wa" href="#" target="_blank" rel="noopener" data-msg="' + esc(msg) + '"><span class="dot"></span>Consultar valor</a></div></article>';
     }).join("");
     const filtros = document.querySelector(".filtros");
     filtros.innerHTML = Object.entries(CAT).map(([k, v]) => '<button type="button" role="tab" data-f="' + k + '" aria-selected="' + (k === "todos") + '">' + v + '</button>').join("");
